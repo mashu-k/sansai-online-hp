@@ -2,6 +2,7 @@ import React from "react";
 import "../app/globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
+import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata = {
   title: "SANSAI ONLINE",
@@ -10,11 +11,13 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="ja">
+    <html lang="ja" suppressHydrationWarning>
       <body>
-        <Navigation />
-        {children}
-        <Footer />
+        <ThemeProvider>
+          <Navigation />
+          {children}
+          <Footer />
+        </ThemeProvider>
       </body>
     </html>
   );

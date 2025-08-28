@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const Navigation = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -59,6 +60,7 @@ const Navigation = () => {
                 {item.name}
               </Link>
             ))}
+            <ThemeToggle />
           </div>
 
           {/* モバイルメニューボタン */}
@@ -96,6 +98,9 @@ const Navigation = () => {
                   {item.name}
                 </Link>
               ))}
+              <div className="px-3 py-2">
+                <ThemeToggle />
+              </div>
             </div>
           </div>
         )}
