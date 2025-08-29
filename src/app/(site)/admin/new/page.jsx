@@ -1,9 +1,7 @@
 "use client";
 import React from "react";
-import AdminEdit from "@/pages/AdminEdit";
+import AdminEdit from "@/components/pages/AdminEdit";
 
 export default function AdminNewPage() {
-  return <AdminEdit />;
+  return <AdminEdit isNewPost={true} />;
 }
-
-

@@ -1,7 +1,8 @@
+"use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { X, Download, Heart, Share2 } from "lucide-react";
-import { Button } from "../components/ui/button";
+import { Button } from "../ui/button";
 import Image from "next/image";
 
 const Gallery = () => {

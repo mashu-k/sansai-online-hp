@@ -3,23 +3,27 @@ import React, { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Input } from "../components/ui/input";
-import { Textarea } from "../components/ui/textarea";
-import { Badge } from "../components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import { Badge } from "../ui/badge";
 import { ArrowLeft, Save, Eye, X } from "lucide-react";
+import { db } from "@/lib/firebase";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  addDoc,
+  collection,
+  serverTimestamp,
+} from "firebase/firestore";
 
-const AdminEdit = () => {
+const AdminEdit = ({ isNewPost = false }) => {
   const params = useParams();
   const id = params?.id;
   const router = useRouter();
-  const isNew = id === "new";
+  const isNew = isNewPost || !id;
 
   const [post, setPost] = useState({
     title: "",
@@ -40,17 +44,33 @@ const AdminEdit = () => {
   const [tagInput, setTagInput] = useState("");
 
   useEffect(() => {
-    if (!isNew) {
+    if (!isNew && id) {
       fetchPost();
+    } else {
+      setLoading(false);
     }
   }, [id, isNew]);
 
   const fetchPost = async () => {
+    // 新規作成の場合やIDがない場合は早期リターン
+    if (isNew || !id) {
+      setLoading(false);
+      return;
+    }
+
     try {
       setLoading(true);
-      const response = await fetch(`/api/posts/${id}`);
-      const data = await response.json();
-      setPost(data);
+      const docRef = doc(db, "posts", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setPost({
+          id: docSnap.id,
+          ...data,
+          date:
+            data.createdAt?.toDate().toLocaleDateString("ja-JP") || data.date,
+        });
+      }
     } catch (error) {
       console.error("記事の取得に失敗しました:", error);
     } finally {
@@ -61,21 +81,25 @@ const AdminEdit = () => {
   const savePost = async (status = post.status) => {
     try {
       setSaving(true);
-      const postData = { ...post, status };
+      const postData = {
+        ...post,
+        status,
+        updatedAt: serverTimestamp(),
+      };
 
-      const response = await fetch(isNew ? "/api/posts" : `/api/posts/${id}`, {
-        method: isNew ? "POST" : "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
-
-      if (response.ok) {
-        router.push("/admin");
+      if (isNew) {
+        await addDoc(collection(db, "posts"), {
+          ...postData,
+          createdAt: serverTimestamp(),
+        });
+      } else if (id) {
+        await setDoc(doc(db, "posts", id), postData, { merge: true });
       } else {
-        console.error("保存に失敗しました");
+        console.error("IDが指定されていません");
+        return;
       }
+
+      router.push("/admin");
     } catch (error) {
       console.error("保存エラー:", error);
     } finally {

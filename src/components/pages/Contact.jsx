@@ -1,42 +1,43 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '../components/ui/card';
-import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
-import { Textarea } from '../components/ui/textarea';
-import { 
-  Mail, 
-  Phone, 
-  MapPin, 
-  Youtube, 
-  Instagram, 
+"use client";
+import React, { useState } from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
+import { Input } from "../ui/input";
+import { Textarea } from "../ui/textarea";
+import {
+  Mail,
+  Phone,
+  MapPin,
+  Youtube,
+  Instagram,
   Twitter,
   Send,
   Clock,
-  MessageCircle
-} from 'lucide-react';
+  MessageCircle,
+} from "lucide-react";
 
 const Contact = () => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
+    name: "",
+    email: "",
+    subject: "",
+    message: "",
   });
 
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     // フォーム送信処理（実際の実装では適切なAPIエンドポイントに送信）
-    console.log('Form submitted:', formData);
-    alert('お問い合わせありがとうございます。後日ご連絡いたします。');
-    setFormData({ name: '', email: '', subject: '', message: '' });
+    console.log("Form submitted:", formData);
+    alert("お問い合わせありがとうございます。後日ご連絡いたします。");
+    setFormData({ name: "", email: "", subject: "", message: "" });
   };
 
   const contactInfo = [
@@ -44,26 +45,26 @@ const Contact = () => {
       icon: Mail,
       title: "メール",
       content: "info@sansai-online.com",
-      description: "お気軽にメールでお問い合わせください"
+      description: "お気軽にメールでお問い合わせください",
     },
     {
       icon: Phone,
       title: "電話",
       content: "03-1234-5678",
-      description: "平日 9:00-18:00"
+      description: "平日 9:00-18:00",
     },
     {
       icon: MapPin,
       title: "所在地",
       content: "東京都渋谷区",
-      description: "詳細な住所はお問い合わせください"
+      description: "詳細な住所はお問い合わせください",
     },
     {
       icon: Clock,
       title: "営業時間",
       content: "平日 9:00-18:00",
-      description: "土日祝日は登山活動のため不定休"
-    }
+      description: "土日祝日は登山活動のため不定休",
+    },
   ];
 
   const socialLinks = [
@@ -71,20 +72,20 @@ const Contact = () => {
       icon: Youtube,
       name: "YouTube",
       url: "#",
-      color: "text-red-500"
+      color: "text-red-500",
     },
     {
       icon: Instagram,
       name: "Instagram",
       url: "#",
-      color: "text-pink-500"
+      color: "text-pink-500",
     },
     {
       icon: Twitter,
       name: "Twitter",
       url: "#",
-      color: "text-blue-500"
-    }
+      color: "text-blue-500",
+    },
   ];
 
   return (
@@ -92,7 +93,7 @@ const Contact = () => {
       {/* ヘッダーセクション */}
       <section className="py-20 px-4 bg-gradient-to-b from-card/20 to-transparent">
         <div className="max-w-6xl mx-auto text-center">
-          <motion.h1 
+          <motion.h1
             className="text-5xl md:text-6xl font-thin mb-6 text-gradient"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -101,7 +102,7 @@ const Contact = () => {
             CONTACT
           </motion.h1>
           <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-          <motion.p 
+          <motion.p
             className="text-xl text-muted-foreground max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -130,7 +131,7 @@ const Contact = () => {
                       お問い合わせフォーム
                     </h2>
                   </div>
-                  
+
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid md:grid-cols-2 gap-4">
                       <div>
@@ -162,7 +163,7 @@ const Contact = () => {
                         />
                       </div>
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium mb-2 text-card-foreground">
                         件名 *
@@ -177,7 +178,7 @@ const Contact = () => {
                         placeholder="お問い合わせの件名"
                       />
                     </div>
-                    
+
                     <div>
                       <label className="block text-sm font-medium mb-2 text-card-foreground">
                         メッセージ *
@@ -192,7 +193,7 @@ const Contact = () => {
                         placeholder="お問い合わせ内容をご記入ください"
                       />
                     </div>
-                    
+
                     <Button type="submit" className="w-full" size="lg">
                       <Send className="mr-2 h-4 w-4" />
                       送信する
@@ -212,9 +213,12 @@ const Contact = () => {
               <h2 className="text-2xl font-medium text-card-foreground mb-8">
                 連絡先情報
               </h2>
-              
+
               {contactInfo.map((info, index) => (
-                <Card key={index} className="card-hover bg-card/50 backdrop-blur-sm border-border/50">
+                <Card
+                  key={index}
+                  className="card-hover bg-card/50 backdrop-blur-sm border-border/50"
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start space-x-4">
                       <div className="p-3 bg-accent/20 rounded-lg">
@@ -269,7 +273,8 @@ const Contact = () => {
                         Q: 登山ツアーは開催していますか？
                       </p>
                       <p className="text-muted-foreground text-sm">
-                        A: 現在は記録・撮影活動に専念しており、一般向けツアーは行っておりません。
+                        A:
+                        現在は記録・撮影活動に専念しており、一般向けツアーは行っておりません。
                       </p>
                     </div>
                     <div>
@@ -292,4 +297,3 @@ const Contact = () => {
 };
 
 export default Contact;
-

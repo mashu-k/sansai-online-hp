@@ -2,15 +2,20 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../components/ui/card";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
 import { Plus, Edit, Trash2, Eye, Calendar, Clock } from "lucide-react";
+import { db } from "@/lib/firebase";
+import {
+  collection,
+  getDocs,
+  deleteDoc,
+  doc,
+  query,
+  where,
+  orderBy,
+} from "firebase/firestore";
 
 const Admin = () => {
   const [posts, setPosts] = useState([]);
@@ -24,9 +29,23 @@ const Admin = () => {
   const fetchPosts = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/posts?status=${filter}`);
-      const data = await response.json();
-      setPosts(data.posts || []);
+      const postsRef = collection(db, "posts");
+      let q = postsRef;
+
+      if (filter !== "all") {
+        q = query(postsRef, where("status", "==", filter));
+      }
+
+      q = query(q, orderBy("createdAt", "desc"));
+      const snapshot = await getDocs(q);
+      const postsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        date:
+          doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+          doc.data().date,
+      }));
+      setPosts(postsData);
     } catch (error) {
       console.error("記事の取得に失敗しました:", error);
     } finally {
@@ -38,7 +57,7 @@ const Admin = () => {
     if (!window.confirm("この記事を削除しますか？")) return;
 
     try {
-      await fetch(`/api/posts/${id}`, { method: "DELETE" });
+      await deleteDoc(doc(db, "posts", id));
       fetchPosts();
     } catch (error) {
       console.error("記事の削除に失敗しました:", error);

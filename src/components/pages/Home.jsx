@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../ui/button";
+import { Card, CardContent } from "../ui/card";
 import {
   Mountain,
   Users,
@@ -14,11 +14,11 @@ import {
 import Link from "next/link";
 
 // 画像のインポート
-import mountainImage1 from "../assets/O3BPW6fJZvdO.jpg";
-import mountainImage2 from "../assets/Gug695rWIM25.jpg";
-import mountainImage3 from "../assets/5ie679JxHPf1.jpeg";
-import mountainImage4 from "../assets/7O7pjhDJ1SN1.jpg";
-import mountainImage5 from "../assets/a6CgwvylfNmr.jpg";
+import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
+import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
+import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
+import mountainImage4 from "../../assets/7O7pjhDJ1SN1.jpg";
+import mountainImage5 from "../../assets/a6CgwvylfNmr.jpg";
 
 const Home = () => {
   const { scrollY } = useScroll();

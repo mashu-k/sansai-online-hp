@@ -1,11 +1,12 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Card, CardContent } from '../components/ui/card';
-import { Mountain, Users, Camera, Target, Heart, Compass } from 'lucide-react';
+"use client";
+import React from "react";
+import { motion } from "framer-motion";
+import { Card, CardContent } from "../ui/card";
+import { Mountain, Users, Camera, Target, Heart, Compass } from "lucide-react";
 
 // 画像のインポート
-import heroImage from '../assets/Y9uxgQCqF1sY.jpg';
-import mountainImage1 from '../assets/O3BPW6fJZvdO.jpg';
+import heroImage from "../../assets/Y9uxgQCqF1sY.jpg";
+import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
 
 const About = () => {
   const teamMembers = [
@@ -14,59 +15,62 @@ const About = () => {
       role: "リーダー・登山ガイド",
       experience: "15年",
       specialty: "高山登山・雪山登山",
-      description: "大学山岳部出身。アルプス、ヒマラヤでの豊富な経験を持つ。"
+      description: "大学山岳部出身。アルプス、ヒマラヤでの豊富な経験を持つ。",
     },
     {
       name: "佐藤 次郎",
       role: "フォトグラファー",
       experience: "12年",
       specialty: "山岳写真・動画撮影",
-      description: "山岳風景の美しさを写真と映像で記録し続けている。"
+      description: "山岳風景の美しさを写真と映像で記録し続けている。",
     },
     {
       name: "鈴木 三郎",
       role: "装備・安全管理",
       experience: "10年",
       specialty: "クライミング・救助技術",
-      description: "チームの安全を支える技術と知識を持つスペシャリスト。"
-    }
+      description: "チームの安全を支える技術と知識を持つスペシャリスト。",
+    },
   ];
 
   const values = [
     {
       icon: Target,
       title: "未踏への挑戦",
-      description: "誰も足を踏み入れたことのない場所への探求心を大切にしています。"
+      description:
+        "誰も足を踏み入れたことのない場所への探求心を大切にしています。",
     },
     {
       icon: Heart,
       title: "自然への敬意",
-      description: "山と自然環境を尊重し、持続可能な登山を心がけています。"
+      description: "山と自然環境を尊重し、持続可能な登山を心がけています。",
     },
     {
       icon: Users,
       title: "チームワーク",
-      description: "3人それぞれの専門性を活かし、安全で充実した冒険を実現します。"
+      description:
+        "3人それぞれの専門性を活かし、安全で充実した冒険を実現します。",
     },
     {
       icon: Compass,
       title: "記録と共有",
-      description: "体験を記録し、多くの人に山の魅力を伝えることを使命としています。"
-    }
+      description:
+        "体験を記録し、多くの人に山の魅力を伝えることを使命としています。",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-20">
       {/* ヒーローセクション */}
       <section className="relative py-32 px-4 overflow-hidden">
-        <div 
+        <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
           style={{ backgroundImage: `url(${heroImage})` }}
         />
         <div className="absolute inset-0 hero-gradient" />
-        
+
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <motion.h1 
+          <motion.h1
             className="text-5xl md:text-6xl font-thin mb-6 text-gradient"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -75,7 +79,7 @@ const About = () => {
             ABOUT US
           </motion.h1>
           <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-          <motion.p 
+          <motion.p
             className="text-xl text-white/90 max-w-2xl mx-auto"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -95,25 +99,30 @@ const About = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <h2 className="text-4xl font-thin mb-6 text-gradient">Our Mission</h2>
+              <h2 className="text-4xl font-thin mb-6 text-gradient">
+                Our Mission
+              </h2>
               <div className="w-16 h-1 bg-accent mb-8"></div>
-              
-              <h3 className="text-2xl font-light mb-6 text-accent">❝山菜採りオンライン❞</h3>
-              
+
+              <h3 className="text-2xl font-light mb-6 text-accent">
+                ❝山菜採りオンライン❞
+              </h3>
+
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
                 未だかつて誰も登ったことのない山があるのをご存じだろうか？
               </p>
-              
+
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
                 また、誰もが登っているような山にも手付かずの場所が残されていることもある。
               </p>
-              
+
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
                 この情報に溢れた現代においてもなお、国内外には未だ人間が足を踏み入れていない場所が眠っているのである。
               </p>
-              
+
               <p className="text-lg leading-relaxed text-muted-foreground">
-                そんな<strong className="text-accent">未踏の世界</strong>へ冒険するため、3人の若者が集まった。
+                そんな<strong className="text-accent">未踏の世界</strong>
+                へ冒険するため、3人の若者が集まった。
               </p>
             </motion.div>
 
@@ -122,8 +131,8 @@ const About = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
             >
-              <img 
-                src={mountainImage1} 
+              <img
+                src={mountainImage1}
                 alt="Mountain landscape"
                 className="w-full rounded-lg shadow-2xl"
               />
@@ -135,15 +144,19 @@ const About = () => {
       {/* 価値観セクション */}
       <section className="py-20 px-4 bg-card/20">
         <div className="max-w-6xl mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl font-thin mb-6 text-gradient">Our Values</h2>
+            <h2 className="text-4xl font-thin mb-6 text-gradient">
+              Our Values
+            </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-            <p className="text-xl text-muted-foreground">私たちが大切にしている価値観</p>
+            <p className="text-xl text-muted-foreground">
+              私たちが大切にしている価値観
+            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -174,7 +187,7 @@ const About = () => {
       {/* チームメンバーセクション */}
       <section className="py-20 px-4">
         <div className="max-w-6xl mx-auto">
-          <motion.div 
+          <motion.div
             className="text-center mb-16"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -182,7 +195,9 @@ const About = () => {
           >
             <h2 className="text-4xl font-thin mb-6 text-gradient">Our Team</h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-            <p className="text-xl text-muted-foreground">3人の専門家が織りなすチームワーク</p>
+            <p className="text-xl text-muted-foreground">
+              3人の専門家が織りなすチームワーク
+            </p>
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -263,4 +278,3 @@ const About = () => {
 };
 
 export default About;
-

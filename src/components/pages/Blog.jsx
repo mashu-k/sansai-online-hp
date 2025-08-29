@@ -2,16 +2,16 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Card, CardContent } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { Card, CardContent } from "../ui/card";
+import { Button } from "../ui/button";
 import { Calendar, Clock, ArrowRight, Search } from "lucide-react";
 
 // 画像のインポート
-import mountainImage1 from "../assets/O3BPW6fJZvdO.jpg";
-import mountainImage2 from "../assets/Gug695rWIM25.jpg";
-import mountainImage3 from "../assets/5ie679JxHPf1.jpeg";
-import mountainImage4 from "../assets/7O7pjhDJ1SN1.jpg";
-import mountainImage5 from "../assets/a6CgwvylfNmr.jpg";
+import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
+import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
+import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
+import mountainImage4 from "../../assets/7O7pjhDJ1SN1.jpg";
+import mountainImage5 from "../../assets/a6CgwvylfNmr.jpg";
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -283,7 +283,9 @@ const Blog = () => {
                           </div>
                           <div className="flex-1">
                             <h4 className="font-medium text-sm mb-1 hover:text-accent transition-colors">
-                              <Link href={`/blog/${post.id}`}>{post.title}</Link>
+                              <Link href={`/blog/${post.id}`}>
+                                {post.title}
+                              </Link>
                             </h4>
                             <p className="text-muted-foreground text-xs">
                               {post.date}

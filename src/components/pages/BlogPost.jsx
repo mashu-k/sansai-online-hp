@@ -3,16 +3,16 @@ import React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button } from "../components/ui/button";
-import { Badge } from "../components/ui/badge";
-import { Card, CardContent } from "../components/ui/card";
-import BlogSidebar from "../components/BlogSidebar";
+import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { Card, CardContent } from "../ui/card";
+import BlogSidebar from "../BlogSidebar";
 import { ArrowLeft, Calendar, Clock, MapPin, User, Tag } from "lucide-react";
 
 // 画像のインポート
-import mountainImage1 from "../assets/O3BPW6fJZvdO.jpg";
-import mountainImage2 from "../assets/Gug695rWIM25.jpg";
-import mountainImage3 from "../assets/5ie679JxHPf1.jpeg";
+import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
+import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
+import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
 
 const BlogPost = () => {
   const params = useParams();
@@ -312,7 +312,10 @@ const BlogPost = () => {
                   <h2 className="text-2xl font-bold mb-6">関連記事</h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {relatedPosts.map((relatedPost) => (
-                      <Link key={relatedPost.id} to={`/blog/${relatedPost.id}`}>
+                      <Link
+                        key={relatedPost.id}
+                        href={`/blog/${relatedPost.id}`}
+                      >
                         <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full">
                           <div className="aspect-video overflow-hidden">
                             <img
