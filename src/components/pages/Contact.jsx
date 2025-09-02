@@ -11,9 +11,7 @@ import {
   MapPin,
   Youtube,
   Instagram,
-  Twitter,
   Send,
-  Clock,
   MessageCircle,
 } from "lucide-react";
 
@@ -44,26 +42,8 @@ const Contact = () => {
     {
       icon: Mail,
       title: "メール",
-      content: "info@sansai-online.com",
+      content: "sansaitorionline@gmail.com",
       description: "お気軽にメールでお問い合わせください",
-    },
-    {
-      icon: Phone,
-      title: "電話",
-      content: "03-1234-5678",
-      description: "平日 9:00-18:00",
-    },
-    {
-      icon: MapPin,
-      title: "所在地",
-      content: "東京都渋谷区",
-      description: "詳細な住所はお問い合わせください",
-    },
-    {
-      icon: Clock,
-      title: "営業時間",
-      content: "平日 9:00-18:00",
-      description: "土日祝日は登山活動のため不定休",
     },
   ];
 
@@ -71,20 +51,14 @@ const Contact = () => {
     {
       icon: Youtube,
       name: "YouTube",
-      url: "#",
+      url: "https://www.youtube.com/@sansai_online",
       color: "text-red-500",
     },
     {
       icon: Instagram,
       name: "Instagram",
-      url: "#",
+      url: "https://www.instagram.com/sansai_online/",
       color: "text-pink-500",
-    },
-    {
-      icon: Twitter,
-      name: "Twitter",
-      url: "#",
-      color: "text-blue-500",
     },
   ];
 
@@ -238,17 +212,17 @@ const Contact = () => {
                 </Card>
               ))}
 
-              {/* ソーシャルメディア */}
+              {/* SNS */}
               <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                 <CardContent className="p-6">
-                  <h3 className="font-medium text-card-foreground mb-4">
-                    ソーシャルメディア
-                  </h3>
+                  <h3 className="font-medium text-card-foreground mb-4">SNS</h3>
                   <div className="flex space-x-4">
                     {socialLinks.map((social, index) => (
                       <a
                         key={index}
                         href={social.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
                         className={`p-3 bg-background/50 rounded-lg hover:bg-accent/20 transition-colors ${social.color}`}
                       >
                         <social.icon className="h-6 w-6" />
@@ -258,34 +232,6 @@ const Contact = () => {
                   <p className="text-muted-foreground text-sm mt-4">
                     最新の冒険記録や美しい山岳写真をSNSで配信中
                   </p>
-                </CardContent>
-              </Card>
-
-              {/* よくある質問 */}
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                <CardContent className="p-6">
-                  <h3 className="font-medium text-card-foreground mb-4">
-                    よくある質問
-                  </h3>
-                  <div className="space-y-3">
-                    <div>
-                      <p className="font-medium text-sm text-accent mb-1">
-                        Q: 登山ツアーは開催していますか？
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        A:
-                        現在は記録・撮影活動に専念しており、一般向けツアーは行っておりません。
-                      </p>
-                    </div>
-                    <div>
-                      <p className="font-medium text-sm text-accent mb-1">
-                        Q: 写真の使用許可について
-                      </p>
-                      <p className="text-muted-foreground text-sm">
-                        A: 商用利用については個別にご相談ください。
-                      </p>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             </motion.div>
