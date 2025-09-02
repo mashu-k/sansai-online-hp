@@ -12,6 +12,15 @@ import {
   ChevronDown,
 } from "lucide-react";
 import Link from "next/link";
+import { db } from "@/lib/firebase";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  orderBy,
+  limit,
+} from "firebase/firestore";
 
 // 画像のインポート
 import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
@@ -27,8 +36,11 @@ const Home = () => {
   const opacity = useTransform(scrollY, [0, 300], [1, 0]);
 
   const [isVisible, setIsVisible] = useState({});
+  const [adventures, setAdventures] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    fetchLatestPosts();
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -48,29 +60,32 @@ const Home = () => {
     return () => observer.disconnect();
   }, []);
 
-  const adventures = [
-    {
-      title: "残雪の槍ヶ岳　飛騨沢での山スキー",
-      date: "2024-06-09",
-      description:
-        "おばけないんてないさ〜♪ おばけなんてうそさ〜 ねーぼけた人が見間違えたのさ！ だけどちょっと、だけどちょっと、僕だって怖いな…",
-      image: mountainImage1,
-    },
-    {
-      title: "【日本100名山】2024/3 厳冬期　利尻山南稜→北稜下降",
-      date: "2024-06-08",
-      description:
-        "それはただひたすらに艶やかな白い肌を持ち、色気を含む魅力(尾根)をたくさん有する。それはまるで寒風吹き荒れる北の海に住まうセイレーン…",
-      image: mountainImage2,
-    },
-    {
-      title: "富士山　お釜と頂上からのスキー滑降",
-      date: "2024-05-17",
-      description:
-        "5/11 6:00須走5合目→(須走ルート)→13:30浅間大社奥宮→14:00剣ヶ峰ドロップ→15:30浅間大社奥宮→1…",
-      image: mountainImage3,
-    },
-  ];
+  const fetchLatestPosts = async () => {
+    try {
+      setLoading(true);
+      const postsRef = collection(db, "posts");
+      const q = query(
+        postsRef,
+        where("status", "==", "published"),
+        orderBy("createdAt", "desc"),
+        limit(3)
+      );
+      const snapshot = await getDocs(q);
+      const posts = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        date:
+          doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+          doc.data().date,
+        image: doc.data().thumbnail || mountainImage1, // サムネイルがない場合のフォールバック
+      }));
+      setAdventures(posts);
+    } catch (error) {
+      console.error("最新記事の取得に失敗しました:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const galleryImages = [
     mountainImage4,
@@ -232,40 +247,48 @@ const Home = () => {
             <p className="text-xl text-muted-foreground">最新の冒険記録</p>
           </motion.div>
 
-          <div className="grid md:grid-cols-3 gap-8 mb-12">
-            {adventures.map((adventure, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                animate={isVisible.adventures ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.8, delay: index * 0.2 }}
-              >
-                <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full">
-                  <div className="aspect-[4/3] overflow-hidden">
-                    <img
-                      src={adventure.image}
-                      alt={adventure.title}
-                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
-                    />
-                  </div>
-                  <CardContent className="p-4 flex flex-col h-full">
-                    <p className="text-sm text-accent mb-2">{adventure.date}</p>
-                    <h3 className="text-lg font-medium mb-2 text-card-foreground line-clamp-2">
-                      {adventure.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm line-clamp-2 mb-4 flex-grow">
-                      {adventure.description}
-                    </p>
-                    <Link href={`/blog/${index + 1}`}>
-                      <Button variant="outline" size="sm" className="w-full">
-                        詳細を見る
-                      </Button>
-                    </Link>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
+          {loading ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground">読み込み中...</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              {adventures.map((adventure, index) => (
+                <motion.div
+                  key={adventure.id}
+                  initial={{ opacity: 0, y: 50 }}
+                  animate={isVisible.adventures ? { opacity: 1, y: 0 } : {}}
+                  transition={{ duration: 0.8, delay: index * 0.2 }}
+                >
+                  <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full">
+                    <div className="aspect-[4/3] overflow-hidden">
+                      <img
+                        src={adventure.image}
+                        alt={adventure.title}
+                        className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                      />
+                    </div>
+                    <CardContent className="p-4 flex flex-col h-full">
+                      <p className="text-sm text-accent mb-2">
+                        {adventure.date}
+                      </p>
+                      <h3 className="text-lg font-medium mb-2 text-card-foreground line-clamp-2">
+                        {adventure.title}
+                      </h3>
+                      <p className="text-muted-foreground text-sm line-clamp-2 mb-4 flex-grow">
+                        {adventure.excerpt || adventure.description}
+                      </p>
+                      <Link href={`/blog/${adventure.id}`}>
+                        <Button variant="outline" size="sm" className="w-full">
+                          詳細を見る
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          )}
 
           {/* ブログ一覧へのリンク */}
           <div className="text-center">

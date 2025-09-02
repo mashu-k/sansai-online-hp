@@ -8,8 +8,20 @@ import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Badge } from "../ui/badge";
-import { ArrowLeft, Save, Eye, X } from "lucide-react";
-import { db } from "@/lib/firebase";
+import {
+  ArrowLeft,
+  Save,
+  Eye,
+  X,
+  Image,
+  Bold,
+  Italic,
+  List,
+  Link2,
+  Code,
+  Heading2,
+} from "lucide-react";
+import { db, storage } from "@/lib/firebase";
 import {
   doc,
   getDoc,
@@ -18,6 +30,7 @@ import {
   collection,
   serverTimestamp,
 } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const AdminEdit = ({ isNewPost = false }) => {
   const params = useParams();
@@ -32,9 +45,8 @@ const AdminEdit = ({ isNewPost = false }) => {
     category: "",
     location: "",
     author: "SANSAI ONLINE",
-    image_url: "",
+    thumbnail: "",
     status: "draft",
-    read_time: "5分",
     tags: [],
   });
 
@@ -42,6 +54,10 @@ const AdminEdit = ({ isNewPost = false }) => {
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [textareaRef, setTextareaRef] = useState(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [previewImages, setPreviewImages] = useState({}); // ローカルプレビュー用
+  const [uploadingThumbnail, setUploadingThumbnail] = useState(false);
 
   useEffect(() => {
     if (!isNew && id) {
@@ -50,6 +66,17 @@ const AdminEdit = ({ isNewPost = false }) => {
       setLoading(false);
     }
   }, [id, isNew]);
+
+  // コンポーネントのアンマウント時にローカルプレビューURLをクリーンアップ
+  useEffect(() => {
+    return () => {
+      Object.keys(previewImages).forEach((url) => {
+        if (previewImages[url] === true) {
+          URL.revokeObjectURL(url);
+        }
+      });
+    };
+  }, []);
 
   const fetchPost = async () => {
     // 新規作成の場合やIDがない場合は早期リターン
@@ -131,6 +158,173 @@ const AdminEdit = ({ isNewPost = false }) => {
     }
   };
 
+  // サムネイルアップロード処理
+  const handleThumbnailUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingThumbnail(true);
+
+    try {
+      // ファイル名を生成
+      const timestamp = Date.now();
+      const fileName = `thumbnails/${timestamp}_${file.name}`;
+
+      // Firebase Storage にアップロード
+      const storageRef = ref(storage, fileName);
+      const snapshot = await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(snapshot.ref);
+
+      // サムネイルURLを設定
+      setPost((prev) => ({ ...prev, thumbnail: downloadURL }));
+
+      console.log("サムネイルアップロード成功:", downloadURL);
+    } catch (error) {
+      console.error("サムネイルアップロードエラー:", error);
+      alert("サムネイルのアップロードに失敗しました。");
+    } finally {
+      setUploadingThumbnail(false);
+      if (e.target) {
+        e.target.value = "";
+      }
+    }
+  };
+
+  // テキストエリアに文字を挿入する関数
+  const insertTextAtCursor = (text) => {
+    if (!textareaRef) return;
+
+    const start = textareaRef.selectionStart;
+    const end = textareaRef.selectionEnd;
+    const currentContent = post.content;
+
+    const newContent =
+      currentContent.substring(0, start) + text + currentContent.substring(end);
+
+    setPost((prev) => ({ ...prev, content: newContent }));
+
+    // カーソル位置を調整
+    setTimeout(() => {
+      textareaRef.selectionStart = start + text.length;
+      textareaRef.selectionEnd = start + text.length;
+      textareaRef.focus();
+    }, 0);
+  };
+
+  // 選択テキストを囲む関数
+  const wrapSelectedText = (before, after) => {
+    if (!textareaRef) return;
+
+    const start = textareaRef.selectionStart;
+    const end = textareaRef.selectionEnd;
+    const currentContent = post.content;
+    const selectedText = currentContent.substring(start, end);
+
+    const newText = before + selectedText + after;
+    const newContent =
+      currentContent.substring(0, start) +
+      newText +
+      currentContent.substring(end);
+
+    setPost((prev) => ({ ...prev, content: newContent }));
+
+    // カーソル位置を調整
+    setTimeout(() => {
+      textareaRef.selectionStart = start + before.length;
+      textareaRef.selectionEnd = start + before.length + selectedText.length;
+      textareaRef.focus();
+    }, 0);
+  };
+
+  // 画像アップロード処理
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) {
+      console.log("ファイルが選択されていません");
+      return;
+    }
+
+    console.log("アップロード開始:", file.name, "サイズ:", file.size);
+    setUploadingImage(true);
+
+    try {
+      // ローカルプレビュー用のURLを先に作成（高速表示用）
+      const localPreviewUrl = URL.createObjectURL(file);
+
+      // ファイル名を生成（タイムスタンプ + オリジナルファイル名）
+      const timestamp = Date.now();
+      const fileName = `posts/${timestamp}_${file.name}`;
+      console.log("アップロード先:", fileName);
+
+      // 一時的にローカルプレビューURLでMarkdownを挿入
+      const tempMarkdown = `\n![${file.name}](${localPreviewUrl})\n`;
+      const cursorPos = textareaRef?.selectionStart || 0;
+      insertTextAtCursor(tempMarkdown);
+
+      // プレビュー用画像マップに追加
+      setPreviewImages((prev) => ({
+        ...prev,
+        [localPreviewUrl]: true,
+      }));
+
+      // Firebase Storage にバックグラウンドでアップロード
+      console.log("Storage参照を作成中...");
+      const storageRef = ref(storage, fileName);
+
+      console.log("ファイルをアップロード中...");
+      const snapshot = await uploadBytes(storageRef, file);
+      console.log("アップロード完了:", snapshot);
+
+      console.log("ダウンロードURLを取得中...");
+      const downloadURL = await getDownloadURL(snapshot.ref);
+      console.log("ダウンロードURL取得成功:", downloadURL);
+
+      // アップロード完了後、ローカルURLを実際のURLに置換
+      setPost((prev) => {
+        const updatedContent = prev.content.replace(
+          localPreviewUrl,
+          downloadURL
+        );
+        return { ...prev, content: updatedContent };
+      });
+
+      // プレビュー画像マップを更新
+      setPreviewImages((prev) => {
+        const newMap = { ...prev };
+        delete newMap[localPreviewUrl];
+        newMap[downloadURL] = false; // Firebaseの画像はfalse
+        return newMap;
+      });
+
+      console.log("画像アップロード成功:", downloadURL);
+    } catch (error) {
+      console.error("画像アップロードエラーの詳細:", error);
+      console.error("エラーコード:", error.code);
+      console.error("エラーメッセージ:", error.message);
+
+      // より詳細なエラーメッセージ
+      let errorMessage = "画像のアップロードに失敗しました。\n";
+      if (error.code === "storage/unauthorized") {
+        errorMessage +=
+          "権限がありません。Firebase Storageのルールを確認してください。";
+      } else if (error.code === "storage/canceled") {
+        errorMessage += "アップロードがキャンセルされました。";
+      } else if (error.code === "storage/unknown") {
+        errorMessage +=
+          "不明なエラーが発生しました。コンソールを確認してください。";
+      } else {
+        errorMessage += error.message;
+      }
+      alert(errorMessage);
+    } finally {
+      setUploadingImage(false);
+      // ファイル入力をリセット
+      if (e.target) {
+        e.target.value = "";
+      }
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen bg-background text-foreground pt-20 flex items-center justify-center">
@@ -195,7 +389,38 @@ const AdminEdit = ({ isNewPost = false }) => {
                     <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
                     <div className="prose prose-lg max-w-none prose-invert">
                       {post.content.split("\n").map((paragraph, index) => {
-                        if (paragraph.startsWith("## ")) {
+                        // 画像の処理
+                        if (paragraph.match(/^!\[.*\]\(.*\)$/)) {
+                          const match = paragraph.match(/^!\[(.*)\]\((.*)\)$/);
+                          if (match) {
+                            const imageUrl = match[2];
+                            const isLocalPreview =
+                              previewImages[imageUrl] === true;
+
+                            return (
+                              <div key={index} className="relative my-4">
+                                <img
+                                  src={imageUrl}
+                                  alt={match[1]}
+                                  className="w-full rounded-lg"
+                                  loading="lazy"
+                                  style={{
+                                    maxHeight: "400px",
+                                    objectFit: "contain",
+                                    backgroundColor: "#f0f0f0",
+                                  }}
+                                />
+                                {isLocalPreview && (
+                                  <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs">
+                                    アップロード中...
+                                  </div>
+                                )}
+                              </div>
+                            );
+                          }
+                        }
+                        // 見出しの処理
+                        else if (paragraph.startsWith("## ")) {
                           return (
                             <h2
                               key={index}
@@ -213,11 +438,38 @@ const AdminEdit = ({ isNewPost = false }) => {
                               {paragraph.replace("### ", "")}
                             </h3>
                           );
-                        } else if (paragraph.trim()) {
+                        }
+                        // リストの処理
+                        else if (paragraph.startsWith("- ")) {
                           return (
-                            <p key={index} className="mb-4 leading-relaxed">
-                              {paragraph}
-                            </p>
+                            <li key={index} className="ml-4 mb-2">
+                              {paragraph.replace("- ", "")}
+                            </li>
+                          );
+                        }
+                        // 通常の段落
+                        else if (paragraph.trim()) {
+                          // 太字、斜体、コードの処理
+                          let processed = paragraph;
+                          processed = processed.replace(
+                            /\*\*(.+?)\*\*/g,
+                            "<strong>$1</strong>"
+                          );
+                          processed = processed.replace(
+                            /\*(.+?)\*/g,
+                            "<em>$1</em>"
+                          );
+                          processed = processed.replace(
+                            /`(.+?)`/g,
+                            '<code class="px-1 py-0.5 bg-muted rounded">$1</code>'
+                          );
+
+                          return (
+                            <p
+                              key={index}
+                              className="mb-4 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: processed }}
+                            />
                           );
                         }
                         return null;
@@ -270,7 +522,93 @@ const AdminEdit = ({ isNewPost = false }) => {
                         <label className="block text-sm font-medium mb-2">
                           本文
                         </label>
+
+                        {/* エディタツールバー */}
+                        <div className="flex flex-wrap gap-1 p-2 border border-border rounded-t-md bg-muted/30">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => wrapSelectedText("**", "**")}
+                            title="太字"
+                          >
+                            <Bold className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => wrapSelectedText("*", "*")}
+                            title="斜体"
+                          >
+                            <Italic className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => insertTextAtCursor("\n## ")}
+                            title="見出し"
+                          >
+                            <Heading2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => insertTextAtCursor("\n- ")}
+                            title="リスト"
+                          >
+                            <List className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => wrapSelectedText("[", "](url)")}
+                            title="リンク"
+                          >
+                            <Link2 className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => wrapSelectedText("`", "`")}
+                            title="コード"
+                          >
+                            <Code className="w-4 h-4" />
+                          </Button>
+
+                          <div className="border-l border-border mx-1" />
+
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage}
+                            id="image-upload-input"
+                          />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() =>
+                              document
+                                .getElementById("image-upload-input")
+                                ?.click()
+                            }
+                            disabled={uploadingImage}
+                            title="画像を挿入"
+                          >
+                            <Image className="w-4 h-4 mr-1" />
+                            {uploadingImage ? "処理中..." : "画像"}
+                          </Button>
+                        </div>
+
                         <Textarea
+                          ref={(el) => setTextareaRef(el)}
                           value={post.content}
                           onChange={(e) =>
                             setPost((prev) => ({
@@ -280,11 +618,10 @@ const AdminEdit = ({ isNewPost = false }) => {
                           }
                           placeholder="記事の本文を入力... (Markdownが使用できます)"
                           rows={20}
-                          className="font-mono"
+                          className="font-mono rounded-t-none"
                         />
                         <p className="text-xs text-muted-foreground mt-1">
-                          Markdownが使用できます。見出しは ## や ###
-                          を使用してください。
+                          Markdownが使用できます。ツールバーから書式を選択するか、直接入力してください。
                         </p>
                       </div>
                     </CardContent>
@@ -336,34 +673,56 @@ const AdminEdit = ({ isNewPost = false }) => {
 
                     <div>
                       <label className="block text-sm font-medium mb-2">
-                        読了時間
+                        サムネイル
                       </label>
-                      <Input
-                        value={post.read_time}
-                        onChange={(e) =>
-                          setPost((prev) => ({
-                            ...prev,
-                            read_time: e.target.value,
-                          }))
-                        }
-                        placeholder="5分"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block text-sm font-medium mb-2">
-                        画像URL
-                      </label>
-                      <Input
-                        value={post.image_url}
-                        onChange={(e) =>
-                          setPost((prev) => ({
-                            ...prev,
-                            image_url: e.target.value,
-                          }))
-                        }
-                        placeholder="https://..."
-                      />
+                      {post.thumbnail ? (
+                        <div className="space-y-2">
+                          <img
+                            src={post.thumbnail}
+                            alt="サムネイル"
+                            className="w-full h-32 object-cover rounded-lg"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              setPost((prev) => ({ ...prev, thumbnail: "" }))
+                            }
+                            className="w-full"
+                          >
+                            <X className="w-4 h-4 mr-2" />
+                            削除
+                          </Button>
+                        </div>
+                      ) : (
+                        <div>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            className="hidden"
+                            onChange={handleThumbnailUpload}
+                            disabled={uploadingThumbnail}
+                            id="thumbnail-upload-input"
+                          />
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                              document
+                                .getElementById("thumbnail-upload-input")
+                                ?.click()
+                            }
+                            disabled={uploadingThumbnail}
+                            className="w-full"
+                          >
+                            <Image className="w-4 h-4 mr-2" />
+                            {uploadingThumbnail
+                              ? "アップロード中..."
+                              : "画像を選択"}
+                          </Button>
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

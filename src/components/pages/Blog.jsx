@@ -1,129 +1,120 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Calendar, Clock, ArrowRight, Search } from "lucide-react";
+import { db } from "@/lib/firebase";
+import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
 // 画像のインポート
 import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
 import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
 import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
-import mountainImage4 from "../../assets/7O7pjhDJ1SN1.jpg";
-import mountainImage5 from "../../assets/a6CgwvylfNmr.jpg";
 
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [blogPosts, setBlogPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState([]);
+  const [popularTags, setPopularTags] = useState([]);
 
-  const blogPosts = [
-    {
-      id: 1,
-      title: "残雪の槍ヶ岳　飛騨沢での山スキー",
-      date: "2024-06-09",
-      readTime: "8分",
-      excerpt:
-        "おばけないんてないさ〜♪ おばけなんてうそさ〜 ねーぼけた人が見間違えたのさ！ だけどちょっと、だけどちょっと、僕だって怖いな…",
-      content:
-        "槍ヶ岳の残雪期における山スキーの記録です。飛騨沢ルートを使用し、厳しい条件下での挑戦となりました。",
-      image: mountainImage1,
-      category: "山スキー",
-      tags: ["槍ヶ岳", "山スキー", "残雪期"],
-    },
-    {
-      id: 2,
-      title: "【日本100名山】2024/3 厳冬期　利尻山南稜→北稜下降",
-      date: "2024-06-08",
-      readTime: "12分",
-      excerpt:
-        "それはただひたすらに艶やかな白い肌を持ち、色気を含む魅力(尾根)をたくさん有する。それはまるで寒風吹き荒れる北の海に住まうセイレーン…",
-      content:
-        "北海道の利尻山での厳冬期登山記録。南稜から登り、北稜を下降するルートでの挑戦的な登山でした。",
-      image: mountainImage2,
-      category: "厳冬期登山",
-      tags: ["利尻山", "厳冬期", "100名山"],
-    },
-    {
-      id: 3,
-      title: "富士山　お釜と頂上からのスキー滑降",
-      date: "2024-05-17",
-      readTime: "10分",
-      excerpt:
-        "5/11 6:00須走5合目→(須走ルート)→13:30浅間大社奥宮→14:00剣ヶ峰ドロップ→15:30浅間大社奥宮→1…",
-      content:
-        "富士山でのスキー滑降記録。お釜から頂上へのルートと、そこからの滑降の詳細な記録です。",
-      image: mountainImage3,
-      category: "スキー滑降",
-      tags: ["富士山", "スキー", "滑降"],
-    },
-    {
-      id: 4,
-      title: "北アルプス縦走記録　表銀座コース",
-      date: "2024-04-15",
-      readTime: "15分",
-      excerpt:
-        "燕岳から槍ヶ岳まで続く表銀座コースの縦走記録。美しい稜線歩きと厳しい岩場の連続でした。",
-      content:
-        "北アルプスの代表的な縦走コースである表銀座コースの詳細な記録です。",
-      image: mountainImage4,
-      category: "縦走",
-      tags: ["北アルプス", "縦走", "表銀座"],
-    },
-    {
-      id: 5,
-      title: "雲海に浮かぶ山々　早朝登山の魅力",
-      date: "2024-03-20",
-      readTime: "6分",
-      excerpt:
-        "早朝の山登りでしか見ることのできない絶景。雲海に浮かぶ山々の美しさについて語ります。",
-      content: "早朝登山の魅力と、雲海の美しさについての考察記事です。",
-      image: mountainImage5,
-      category: "風景",
-      tags: ["雲海", "早朝", "風景"],
-    },
-  ];
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
-  const categories = [
-    { id: "all", name: "すべて", count: 5 },
-    { id: "山スキー", name: "山スキー", count: 1 },
-    { id: "厳冬期登山", name: "厳冬期登山", count: 1 },
-    { id: "スキー滑降", name: "スキー滑降", count: 1 },
-    { id: "縦走", name: "縦走", count: 1 },
-    { id: "風景", name: "風景", count: 1 },
-  ];
+  const fetchPosts = async () => {
+    try {
+      setLoading(true);
+      const postsRef = collection(db, "posts");
+      const q = query(
+        postsRef,
+        where("status", "==", "published")
+        // orderBy("createdAt", "desc") // インデックス作成後に有効化
+      );
+      const snapshot = await getDocs(q);
+      const posts = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+        date:
+          doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+          doc.data().date,
+      }));
+      setBlogPosts(posts);
 
-  const popularTags = [
-    { name: "槍ヶ岳", count: 8 },
-    { name: "富士山", count: 12 },
-    { name: "北アルプス", count: 15 },
-    { name: "山スキー", count: 6 },
-    { name: "厳冬期", count: 4 },
-    { name: "縦走", count: 7 },
-  ];
+      // カテゴリーとタグの統計を計算
+      calculateStats(posts);
+    } catch (error) {
+      console.error("記事の取得に失敗しました:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculateStats = (posts) => {
+    // カテゴリーの統計
+    const categoryCounts = {};
+    const tagCounts = {};
+
+    posts.forEach((post) => {
+      if (post.category) {
+        categoryCounts[post.category] =
+          (categoryCounts[post.category] || 0) + 1;
+      }
+
+      if (post.tags && Array.isArray(post.tags)) {
+        post.tags.forEach((tag) => {
+          tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+      }
+    });
+
+    // カテゴリー配列を作成
+    const categoryArray = [
+      { id: "all", name: "すべて", count: posts.length },
+      ...Object.entries(categoryCounts).map(([id, count]) => ({
+        id,
+        name: id,
+        count,
+      })),
+    ];
+    setCategories(categoryArray);
+
+    // 人気タグ配列を作成（上位6件）
+    const sortedTags = Object.entries(tagCounts)
+      .sort(([, a], [, b]) => b - a)
+      .slice(0, 6)
+      .map(([name, count]) => ({ name, count }));
+    setPopularTags(sortedTags);
+  };
 
   const relatedPosts = [
     {
       id: 6,
       title: "初心者向け登山ガイド",
       date: "2024年2月15日",
-      image: mountainImage1,
+      thumbnail: mountainImage1,
     },
     {
       id: 7,
       title: "山小屋泊まりのコツ",
       date: "2024年1月20日",
-      image: mountainImage2,
+      thumbnail: mountainImage2,
     },
     {
       id: 8,
       title: "登山写真撮影テクニック",
       date: "2024年1月10日",
-      image: mountainImage3,
+      thumbnail: mountainImage3,
     },
   ];
 
-  const filteredPosts = blogPosts.filter((post) => {
+  // Firebase から取得した記事がない場合は空配列を使用
+  const displayPosts = blogPosts.length > 0 ? blogPosts : [];
+
+  const filteredPosts = displayPosts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
       post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
@@ -131,6 +122,27 @@ const Blog = () => {
       selectedCategory === "all" || post.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // 関連記事を実際の記事から取得
+  const getRelatedPosts = () => {
+    if (blogPosts.length === 0) return relatedPosts;
+
+    // 最新の3件を関連記事として表示
+    return blogPosts.slice(0, 3).map((post) => ({
+      id: post.id,
+      title: post.title,
+      date: post.date,
+      thumbnail: post.thumbnail || mountainImage1,
+    }));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground pt-20 flex items-center justify-center">
+        <p className="text-muted-foreground">読み込み中...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-20">
@@ -174,7 +186,7 @@ const Blog = () => {
                     <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden">
                       <div className="aspect-video overflow-hidden">
                         <img
-                          src={post.image}
+                          src={post.thumbnail}
                           alt={post.title}
                           className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                         />
@@ -272,11 +284,11 @@ const Blog = () => {
                   <CardContent className="p-6">
                     <h3 className="text-xl font-medium mb-4">関連記事</h3>
                     <div className="space-y-4">
-                      {relatedPosts.map((post) => (
+                      {getRelatedPosts().map((post) => (
                         <div key={post.id} className="flex gap-4">
                           <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
                             <img
-                              src={post.image}
+                              src={post.thumbnail}
                               alt={post.title}
                               className="w-full h-full object-cover"
                             />
@@ -341,34 +353,6 @@ const Blog = () => {
                         </span>
                       ))}
                     </div>
-                  </CardContent>
-                </Card>
-
-                {/* ニュースレター購読 */}
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-medium mb-4">
-                      ニュースレター購読
-                    </h3>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      最新の登山記録や情報をメールで受け取りませんか？
-                    </p>
-                    <div className="space-y-3">
-                      <input
-                        type="text"
-                        placeholder="お名前"
-                        className="w-full bg-muted text-foreground px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                      />
-                      <input
-                        type="email"
-                        placeholder="メールアドレス"
-                        className="w-full bg-muted text-foreground px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-accent"
-                      />
-                      <Button className="w-full">購読する</Button>
-                    </div>
-                    <p className="text-muted-foreground text-xs mt-2">
-                      スパムメールは送信しません。いつでも配信停止できます。
-                    </p>
                   </CardContent>
                 </Card>
               </div>

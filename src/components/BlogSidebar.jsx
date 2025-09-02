@@ -167,26 +167,6 @@ const BlogSidebar = ({ currentPostId }) => {
           </div>
         </CardContent>
       </Card>
-
-      {/* ニュースレター購読 */}
-      <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-        <CardHeader>
-          <CardTitle className="text-lg">最新記事を受け取る</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-sm text-muted-foreground">
-            SANSAI ONLINEの最新の冒険記録をメールで受け取りませんか？
-          </p>
-          <div className="space-y-3">
-            <Input placeholder="お名前" />
-            <Input placeholder="メールアドレス" type="email" />
-            <Button className="w-full">購読する</Button>
-          </div>
-          <p className="text-xs text-muted-foreground">
-            スパムメールは送信しません。いつでも購読解除できます。
-          </p>
-        </CardContent>
-      </Card>
     </div>
   );
 };

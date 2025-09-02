@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
@@ -7,7 +7,16 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
 import BlogSidebar from "../BlogSidebar";
-import { ArrowLeft, Calendar, Clock, MapPin, User, Tag } from "lucide-react";
+import { ArrowLeft, Calendar, MapPin, User, Tag } from "lucide-react";
+import { db } from "@/lib/firebase";
+import {
+  doc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 
 // 画像のインポート
 import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
@@ -17,13 +26,100 @@ import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
 const BlogPost = () => {
   const params = useParams();
   const id = params?.id;
+  const [post, setPost] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [relatedPosts, setRelatedPosts] = useState([]);
 
-  const blogPosts = {
+  useEffect(() => {
+    if (id) {
+      fetchPost();
+    }
+  }, [id]);
+
+  const fetchPost = async () => {
+    try {
+      setLoading(true);
+      const docRef = doc(db, "posts", id);
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setPost({
+          id: docSnap.id,
+          ...data,
+          date:
+            data.createdAt?.toDate().toLocaleDateString("ja-JP") || data.date,
+        });
+
+        // 関連記事を取得（同じカテゴリの記事）
+        if (data.category) {
+          fetchRelatedPosts(data.category, docSnap.id);
+        }
+      } else {
+        // ダミーデータにフォールバック
+        const dummyPost = dummyPosts[id];
+        if (dummyPost) {
+          setPost(dummyPost);
+          // ダミーデータの関連記事
+          const dummyRelated = Object.values(dummyPosts)
+            .filter((p) => p.id !== parseInt(id))
+            .slice(0, 2);
+          setRelatedPosts(dummyRelated);
+        }
+      }
+    } catch (error) {
+      console.error("記事の取得に失敗しました:", error);
+      // エラー時もダミーデータを試す
+      const dummyPost = dummyPosts[id];
+      if (dummyPost) {
+        setPost(dummyPost);
+        const dummyRelated = Object.values(dummyPosts)
+          .filter((p) => p.id !== parseInt(id))
+          .slice(0, 2);
+        setRelatedPosts(dummyRelated);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchRelatedPosts = async (category, currentPostId) => {
+    try {
+      const postsRef = collection(db, "posts");
+      const q = query(
+        postsRef,
+        where("status", "==", "published"),
+        where("category", "==", category)
+      );
+      const snapshot = await getDocs(q);
+      const posts = snapshot.docs
+        .map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+          date:
+            doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+            doc.data().date,
+        }))
+        .filter((p) => p.id !== currentPostId)
+        .slice(0, 2);
+      setRelatedPosts(posts);
+    } catch (error) {
+      console.error("関連記事の取得に失敗しました:", error);
+      // エラー時はダミーデータを使用
+      const dummyRelated = Object.values(dummyPosts)
+        .filter((p) => p.id !== parseInt(id))
+        .slice(0, 2);
+      setRelatedPosts(dummyRelated);
+    }
+  };
+
+  // ダミーデータ
+  const dummyPosts = {
     1: {
       id: 1,
       title: "残雪の槍ヶ岳　飛騨沢での山スキー",
       date: "2024-06-09",
-      readTime: "8分",
+
       location: "槍ヶ岳・飛騨沢",
       category: "山スキー",
       tags: ["槍ヶ岳", "山スキー", "残雪"],
@@ -69,13 +165,13 @@ const BlogPost = () => {
 
 スキー滑降では新雪のパウダーを楽しむことができ、技術的にも非常に充実した山行となりました。
       `,
-      image: mountainImage1,
+      thumbnail: mountainImage1,
     },
     2: {
       id: 2,
       title: "【日本100名山】2024/3 厳冬期　利尻山南稜→北稜下降",
       date: "2024-06-08",
-      readTime: "12分",
+
       location: "利尻山",
       category: "厳冬期登山",
       tags: ["利尻山", "厳冬期", "日本100名山"],
@@ -116,13 +212,13 @@ const BlogPost = () => {
 
 厳冬期の利尻山は想像以上に厳しい条件でしたが、その分達成感も格別でした。北海道の大自然の厳しさと美しさを同時に体験できる、忘れられない山行となりました。
       `,
-      image: mountainImage2,
+      thumbnail: mountainImage2,
     },
     3: {
       id: 3,
       title: "富士山　お釜と頂上からのスキー滑降",
       date: "2024-05-17",
-      readTime: "10分",
+
       location: "富士山",
       category: "スキー滑降",
       tags: ["富士山", "スキー滑降", "お釜"],
@@ -176,11 +272,17 @@ const BlogPost = () => {
 
 富士山からのスキー滑降は、技術的な挑戦と絶景を同時に楽しめる素晴らしい体験でした。日本最高峰からの滑降という特別感は、他では味わえない貴重な経験となりました。
       `,
-      image: mountainImage3,
+      thumbnail: mountainImage3,
     },
   };
 
-  const post = blogPosts[id];
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground pt-20 flex items-center justify-center">
+        <p className="text-muted-foreground">読み込み中...</p>
+      </div>
+    );
+  }
 
   if (!post) {
     return (
@@ -195,10 +297,7 @@ const BlogPost = () => {
     );
   }
 
-  // 関連記事（現在の記事以外）
-  const relatedPosts = Object.values(blogPosts)
-    .filter((p) => p.id !== parseInt(id))
-    .slice(0, 2);
+  // 関連記事は state で管理
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-20">
@@ -206,7 +305,7 @@ const BlogPost = () => {
       <section className="relative h-96 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${post.image})` }}
+          style={{ backgroundImage: `url(${post.thumbnail})` }}
         />
         <div className="absolute inset-0 bg-black/50" />
 
@@ -240,10 +339,7 @@ const BlogPost = () => {
                 <Calendar className="h-4 w-4 mr-2" />
                 {post.date}
               </div>
-              <div className="flex items-center">
-                <Clock className="h-4 w-4 mr-2" />
-                {post.readTime}
-              </div>
+
               <div className="flex items-center">
                 <MapPin className="h-4 w-4 mr-2" />
                 {post.location}
@@ -285,25 +381,75 @@ const BlogPost = () => {
 
                 <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                   <CardContent className="p-8">
-                    <div
-                      className="text-foreground leading-relaxed"
-                      dangerouslySetInnerHTML={{
-                        __html: post.content
-                          .replace(/\n/g, "<br>")
-                          .replace(
-                            /## /g,
-                            '<h2 class="text-2xl font-bold mt-8 mb-4 text-accent">'
-                          )
-                          .replace(
-                            /### /g,
-                            '<h3 class="text-xl font-semibold mt-6 mb-3 text-accent">'
-                          )
-                          .replace(
-                            /\*\*(.*?)\*\*/g,
+                    <div className="text-foreground leading-relaxed">
+                      {post.content.split("\n").map((paragraph, index) => {
+                        // 画像の処理
+                        if (paragraph.match(/^!\[.*\]\(.*\)$/)) {
+                          const match = paragraph.match(/^!\[(.*)\]\((.*)\)$/);
+                          if (match) {
+                            return (
+                              <img
+                                key={index}
+                                src={match[2]}
+                                alt={match[1]}
+                                className="w-full rounded-lg my-4"
+                                loading="lazy"
+                              />
+                            );
+                          }
+                        }
+                        // 見出しの処理
+                        else if (paragraph.startsWith("## ")) {
+                          return (
+                            <h2
+                              key={index}
+                              className="text-2xl font-bold mt-8 mb-4 text-accent"
+                            >
+                              {paragraph.replace("## ", "")}
+                            </h2>
+                          );
+                        } else if (paragraph.startsWith("### ")) {
+                          return (
+                            <h3
+                              key={index}
+                              className="text-xl font-semibold mt-6 mb-3 text-accent"
+                            >
+                              {paragraph.replace("### ", "")}
+                            </h3>
+                          );
+                        } else if (paragraph.startsWith("- ")) {
+                          return (
+                            <li key={index} className="ml-4 mb-2">
+                              {paragraph.replace("- ", "")}
+                            </li>
+                          );
+                        } else if (paragraph.trim()) {
+                          // 太字、斜体、コードの処理
+                          let processed = paragraph;
+                          processed = processed.replace(
+                            /\*\*(.+?)\*\*/g,
                             '<strong class="text-accent">$1</strong>'
-                          ),
-                      }}
-                    />
+                          );
+                          processed = processed.replace(
+                            /\*(.+?)\*/g,
+                            "<em>$1</em>"
+                          );
+                          processed = processed.replace(
+                            /`(.+?)`/g,
+                            '<code class="px-1 py-0.5 bg-muted rounded">$1</code>'
+                          );
+
+                          return (
+                            <p
+                              key={index}
+                              className="mb-4 leading-relaxed"
+                              dangerouslySetInnerHTML={{ __html: processed }}
+                            />
+                          );
+                        }
+                        return null;
+                      })}
+                    </div>
                   </CardContent>
                 </Card>
 
@@ -319,7 +465,7 @@ const BlogPost = () => {
                         <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full">
                           <div className="aspect-video overflow-hidden">
                             <img
-                              src={relatedPost.image}
+                              src={relatedPost.thumbnail}
                               alt={relatedPost.title}
                               className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
                             />
