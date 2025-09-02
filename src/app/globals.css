@@ -1,1 +1,16 @@
 @import "../index.css";
+
+/* カスタムカラー設定 */
+@theme {
+  --color-accent: #00aebd; /* 青緑系 */
+  --color-accent-50: #e6f7f8;
+  --color-accent-100: #b3e8ec;
+  --color-accent-200: #80d9e0;
+  --color-accent-300: #4dcad4;
+  --color-accent-400: #1abbb8;
+  --color-accent-500: #00aebd;
+  --color-accent-600: #0099a8;
+  --color-accent-700: #008493;
+  --color-accent-800: #006f7e;
+  --color-accent-900: #005a69;
+}

@@ -1,14 +1,16 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button } from "../ui/button";
-import { Badge } from "../ui/badge";
 import { Card, CardContent } from "../ui/card";
-import BlogSidebar from "../BlogSidebar";
-import { ArrowLeft, Calendar, MapPin, User, Tag } from "lucide-react";
+import { Badge } from "../ui/badge";
+import { Button } from "../ui/button";
+import { Calendar, Clock, MapPin, User, ArrowLeft, Tag } from "lucide-react";
+import Link from "next/link";
 import { db } from "@/lib/firebase";
+import BlogSidebar from "../BlogSidebar";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   doc,
   getDoc,
@@ -17,11 +19,6 @@ import {
   query,
   where,
 } from "firebase/firestore";
-
-// 画像のインポート
-import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
-import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
-import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
 
 const BlogPost = () => {
   const params = useParams();
@@ -105,175 +102,7 @@ const BlogPost = () => {
       setRelatedPosts(posts);
     } catch (error) {
       console.error("関連記事の取得に失敗しました:", error);
-      // エラー時はダミーデータを使用
-      const dummyRelated = Object.values(dummyPosts)
-        .filter((p) => p.id !== parseInt(id))
-        .slice(0, 2);
-      setRelatedPosts(dummyRelated);
     }
-  };
-
-  // ダミーデータ
-  const dummyPosts = {
-    1: {
-      id: 1,
-      title: "残雪の槍ヶ岳　飛騨沢での山スキー",
-      date: "2024-06-09",
-
-      location: "槍ヶ岳・飛騨沢",
-      category: "山スキー",
-      tags: ["槍ヶ岳", "山スキー", "残雪"],
-      author: "SANSAI ONLINE",
-      excerpt:
-        "おばけないんてないさ〜♪ おばけなんてうそさ〜 ねーぼけた人が見間違えたのさ！ だけどちょっと、だけどちょっと、僕だって怖いな…",
-      content: `
-槍ヶ岳の残雪期における山スキーの記録です。飛騨沢ルートを使用し、厳しい条件下での挑戦となりました。
-
-## 登山概要
-
-**日程**: 2024年6月9日
-**ルート**: 飛騨沢ルート
-**天候**: 晴れ時々曇り
-**メンバー**: 3名
-
-## 行程
-
-### 1日目
-- 05:00 上高地出発
-- 08:30 横尾到着
-- 12:00 槍沢ロッヂ到着
-- 15:00 槍ヶ岳山荘到着
-
-### 2日目
-- 04:00 槍ヶ岳山荘出発
-- 06:30 槍ヶ岳山頂到着
-- 08:00 スキー滑降開始
-- 12:00 槍沢ロッヂ到着
-
-## 装備
-
-- 山スキー板
-- シール
-- ヘルメット
-- アバランチビーコン
-- プローブ
-- ショベル
-
-## 感想
-
-残雪期の槍ヶ岳は格別の美しさでした。特に山頂からの360度のパノラマは圧巻で、北アルプスの雄大さを改めて感じることができました。
-
-スキー滑降では新雪のパウダーを楽しむことができ、技術的にも非常に充実した山行となりました。
-      `,
-      thumbnail: mountainImage1,
-    },
-    2: {
-      id: 2,
-      title: "【日本100名山】2024/3 厳冬期　利尻山南稜→北稜下降",
-      date: "2024-06-08",
-
-      location: "利尻山",
-      category: "厳冬期登山",
-      tags: ["利尻山", "厳冬期", "日本100名山"],
-      author: "SANSAI ONLINE",
-      excerpt:
-        "それはただひたすらに艶やかな白い肌を持ち、色気を含む魅力(尾根)をたくさん有する。それはまるで寒風吹き荒れる北の海に住まうセイレーン…",
-      content: `
-北海道の利尻山での厳冬期登山記録。南稜から登り、北稜を下降するルートでの挑戦的な登山でした。
-
-## 登山概要
-
-**日程**: 2024年3月15日-16日
-**ルート**: 南稜→北稜下降
-**天候**: 吹雪のち晴れ
-**気温**: -15℃〜-25℃
-
-## 厳冬期の利尻山
-
-利尻山は北海道の最北端に位置する独立峰で、厳冬期の登山は極めて困難とされています。今回は南稜ルートからアプローチし、北稜を下降するという技術的に高度なルートを選択しました。
-
-### 装備
-
-- 冬山用テント
-- -30℃対応シュラフ
-- アイゼン（12本爪）
-- ピッケル
-- 雪洞掘削用具
-
-## 山行記録
-
-### 1日目
-強風と吹雪の中でのスタート。視界は10m程度で、GPSとコンパスに頼った慎重な登行となりました。
-
-### 2日目
-天候が回復し、山頂からは360度の絶景を楽しむことができました。オホーツク海と日本海を同時に見渡せる贅沢な景色でした。
-
-## まとめ
-
-厳冬期の利尻山は想像以上に厳しい条件でしたが、その分達成感も格別でした。北海道の大自然の厳しさと美しさを同時に体験できる、忘れられない山行となりました。
-      `,
-      thumbnail: mountainImage2,
-    },
-    3: {
-      id: 3,
-      title: "富士山　お釜と頂上からのスキー滑降",
-      date: "2024-05-17",
-
-      location: "富士山",
-      category: "スキー滑降",
-      tags: ["富士山", "スキー滑降", "お釜"],
-      author: "SANSAI ONLINE",
-      excerpt:
-        "5/11 6:00須走5合目→(須走ルート)→13:30浅間大社奥宮→14:00剣ヶ峰ドロップ→15:30浅間大社奥宮→1…",
-      content: `
-富士山でのスキー滑降記録。お釜から頂上へのルートと、そこからの滑降の詳細な記録です。
-
-## 登山概要
-
-**日程**: 2024年5月17日
-**ルート**: 須走ルート
-**天候**: 快晴
-**積雪**: 山頂付近1.5m
-
-## 詳細行程
-
-### 登り
-- 06:00 須走5合目出発
-- 09:30 7合目到着
-- 11:00 8合目到着
-- 13:30 浅間大社奥宮到着
-- 14:00 剣ヶ峰到達
-
-### 滑降
-- 14:00 剣ヶ峰からドロップイン
-- 14:30 お釜周辺滑降
-- 15:30 浅間大社奥宮帰着
-- 17:00 須走5合目到着
-
-## スキー滑降の魅力
-
-富士山でのスキー滑降は、日本最高峰からの滑降という特別な体験です。特にお釜周辺の斜面は適度な傾斜があり、スキーヤーにとって非常に魅力的なフィールドです。
-
-### 注意点
-
-- 風の影響を受けやすい
-- 雪質の変化が激しい
-- 滑降ルートの事前確認が重要
-
-## 装備
-
-- 山スキー板（バックカントリー用）
-- シール
-- ヘルメット
-- ゴーグル
-- 防風ジャケット
-
-## 感想
-
-富士山からのスキー滑降は、技術的な挑戦と絶景を同時に楽しめる素晴らしい体験でした。日本最高峰からの滑降という特別感は、他では味わえない貴重な経験となりました。
-      `,
-      thumbnail: mountainImage3,
-    },
   };
 
   if (loading) {
@@ -373,7 +202,6 @@ const BlogPost = () => {
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8 }}
-                className="prose prose-lg prose-invert max-w-none"
               >
                 <div className="text-xl text-muted-foreground mb-8 leading-relaxed">
                   {post.excerpt}
@@ -381,74 +209,113 @@ const BlogPost = () => {
 
                 <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                   <CardContent className="p-8">
-                    <div className="text-foreground leading-relaxed">
-                      {post.content.split("\n").map((paragraph, index) => {
-                        // 画像の処理
-                        if (paragraph.match(/^!\[.*\]\(.*\)$/)) {
-                          const match = paragraph.match(/^!\[(.*)\]\((.*)\)$/);
-                          if (match) {
-                            return (
-                              <img
-                                key={index}
-                                src={match[2]}
-                                alt={match[1]}
-                                className="w-full rounded-lg my-4"
-                                loading="lazy"
-                              />
-                            );
-                          }
-                        }
-                        // 見出しの処理
-                        else if (paragraph.startsWith("## ")) {
-                          return (
-                            <h2
-                              key={index}
-                              className="text-2xl font-bold mt-8 mb-4 text-accent"
-                            >
-                              {paragraph.replace("## ", "")}
+                    <div className="prose prose-lg max-w-none">
+                      <ReactMarkdown
+                        remarkPlugins={[remarkGfm]}
+                        components={{
+                          h2: ({ children }) => (
+                            <h2 className="text-3xl font-bold mt-12 mb-6 text-accent border-b-2 border-accent/20 pb-2">
+                              {children}
                             </h2>
-                          );
-                        } else if (paragraph.startsWith("### ")) {
-                          return (
-                            <h3
-                              key={index}
-                              className="text-xl font-semibold mt-6 mb-3 text-accent"
-                            >
-                              {paragraph.replace("### ", "")}
+                          ),
+                          h3: ({ children }) => (
+                            <h3 className="text-2xl font-semibold mt-10 mb-4 text-accent/90 border-l-4 border-accent pl-4">
+                              {children}
                             </h3>
-                          );
-                        } else if (paragraph.startsWith("- ")) {
-                          return (
-                            <li key={index} className="ml-4 mb-2">
-                              {paragraph.replace("- ", "")}
+                          ),
+                          h4: ({ children }) => (
+                            <h4 className="text-xl font-medium mt-8 mb-3 text-accent/80 bg-accent/5 px-3 py-2 rounded-lg">
+                              {children}
+                            </h4>
+                          ),
+                          p: ({ children, ...props }) => {
+                            // 画像が含まれている場合は、pタグをdivに変更
+                            if (
+                              React.Children.toArray(children).some(
+                                (child) =>
+                                  React.isValidElement(child) &&
+                                  child.type === "img"
+                              )
+                            ) {
+                              return (
+                                <div
+                                  className="mb-6 leading-relaxed text-foreground/90 text-base"
+                                  {...props}
+                                >
+                                  {children}
+                                </div>
+                              );
+                            }
+                            return (
+                              <p
+                                className="mb-6 leading-relaxed text-foreground/90 text-base"
+                                {...props}
+                              >
+                                {children}
+                              </p>
+                            );
+                          },
+                          strong: ({ children }) => (
+                            <strong className="text-accent font-semibold">
+                              {children}
+                            </strong>
+                          ),
+                          em: ({ children }) => (
+                            <em className="italic text-foreground/80">
+                              {children}
+                            </em>
+                          ),
+                          code: ({ children }) => (
+                            <code className="px-2 py-1 bg-muted rounded text-sm font-mono text-accent border border-border/30">
+                              {children}
+                            </code>
+                          ),
+                          li: ({ children }) => (
+                            <li className="ml-6 mb-3 text-foreground/90 leading-relaxed">
+                              {children}
                             </li>
-                          );
-                        } else if (paragraph.trim()) {
-                          // 太字、斜体、コードの処理
-                          let processed = paragraph;
-                          processed = processed.replace(
-                            /\*\*(.+?)\*\*/g,
-                            '<strong class="text-accent">$1</strong>'
-                          );
-                          processed = processed.replace(
-                            /\*(.+?)\*/g,
-                            "<em>$1</em>"
-                          );
-                          processed = processed.replace(
-                            /`(.+?)`/g,
-                            '<code class="px-1 py-0.5 bg-muted rounded">$1</code>'
-                          );
-
-                          return (
-                            <p
-                              key={index}
-                              className="mb-4 leading-relaxed"
-                              dangerouslySetInnerHTML={{ __html: processed }}
-                            />
-                          );
-                        }
-                        return null;
-                      })}
+                          ),
+                          ul: ({ children }) => (
+                            <ul className="mb-6 list-disc">{children}</ul>
+                          ),
+                          ol: ({ children }) => (
+                            <ol className="mb-6 list-decimal list-inside">
+                              {children}
+                            </ol>
+                          ),
+                          blockquote: ({ children }) => (
+                            <blockquote className="border-l-4 border-accent/40 pl-6 py-4 my-6 bg-accent/5 rounded-r-lg italic text-foreground/80">
+                              {children}
+                            </blockquote>
+                          ),
+                          a: ({ href, children }) => (
+                            <a
+                              href={href}
+                              className="text-accent hover:text-accent/80 hover:underline transition-colors duration-200 underline-offset-2"
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {children}
+                            </a>
+                          ),
+                          img: ({ src, alt }) => (
+                            <div className="my-8">
+                              <img
+                                src={src}
+                                alt={alt}
+                                className="w-full rounded-lg shadow-lg border border-border/30"
+                              />
+                              {alt && (
+                                <div className="text-center text-sm text-muted-foreground mt-3 italic">
+                                  {alt}
+                                </div>
+                              )}
+                            </div>
+                          ),
+                        }}
+                      >
+                        {post.content}
+                      </ReactMarkdown>
                     </div>
                   </CardContent>
                 </Card>

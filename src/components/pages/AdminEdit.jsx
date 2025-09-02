@@ -20,6 +20,8 @@ import {
   Link2,
   Code,
   Heading2,
+  Heading3,
+  Heading4,
 } from "lucide-react";
 import { db, storage } from "@/lib/firebase";
 import {
@@ -31,6 +33,8 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 const AdminEdit = ({ isNewPost = false }) => {
   const params = useParams();
@@ -381,102 +385,106 @@ const AdminEdit = ({ isNewPost = false }) => {
             {/* メインエディタ */}
             <div className="lg:col-span-2">
               {previewMode ? (
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardHeader>
-                    <CardTitle>プレビュー</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-                    <div className="prose prose-lg max-w-none prose-invert">
-                      {post.content.split("\n").map((paragraph, index) => {
-                        // 画像の処理
-                        if (paragraph.match(/^!\[.*\]\(.*\)$/)) {
-                          const match = paragraph.match(/^!\[(.*)\]\((.*)\)$/);
-                          if (match) {
-                            const imageUrl = match[2];
-                            const isLocalPreview =
-                              previewImages[imageUrl] === true;
-
-                            return (
-                              <div key={index} className="relative my-4">
+                <div className="lg:col-span-3">
+                  <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+                    <CardHeader>
+                      <CardTitle className="flex items-center justify-between">
+                        <span>プレビュー</span>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setPreviewMode(false)}
+                        >
+                          <X className="w-4 h-4 mr-2" />
+                          編集に戻る
+                        </Button>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8">
+                      <div className="prose prose-lg max-w-none">
+                        <ReactMarkdown
+                          remarkPlugins={[remarkGfm]}
+                          components={{
+                            h2: ({ children }) => (
+                              <h2 className="text-2xl font-bold mt-8 mb-4 text-accent">
+                                {children}
+                              </h2>
+                            ),
+                            h3: ({ children }) => (
+                              <h3 className="text-xl font-semibold mt-6 mb-3 text-accent">
+                                {children}
+                              </h3>
+                            ),
+                            h4: ({ children }) => (
+                              <h4 className="text-lg font-medium mt-4 mb-2 text-accent/80">
+                                {children}
+                              </h4>
+                            ),
+                            p: ({ children }) => (
+                              <p className="mb-4 leading-relaxed">{children}</p>
+                            ),
+                            strong: ({ children }) => (
+                              <strong className="text-accent">
+                                {children}
+                              </strong>
+                            ),
+                            em: ({ children }) => (
+                              <em className="italic">{children}</em>
+                            ),
+                            code: ({ children }) => (
+                              <code className="px-1 py-0.5 bg-muted rounded text-sm">
+                                {children}
+                              </code>
+                            ),
+                            li: ({ children }) => (
+                              <li className="ml-4 mb-2">{children}</li>
+                            ),
+                            ul: ({ children }) => (
+                              <ul className="mb-4">{children}</ul>
+                            ),
+                            ol: ({ children }) => (
+                              <ol className="mb-4 list-decimal list-inside">
+                                {children}
+                              </ol>
+                            ),
+                            blockquote: ({ children }) => (
+                              <blockquote className="border-l-4 border-accent pl-4 py-2 my-4 bg-muted/30 italic">
+                                {children}
+                              </blockquote>
+                            ),
+                            a: ({ href, children }) => (
+                              <a
+                                href={href}
+                                className="text-accent hover:underline"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                              >
+                                {children}
+                              </a>
+                            ),
+                            img: ({ src, alt }) => (
+                              <div className="my-6">
                                 <img
-                                  src={imageUrl}
-                                  alt={match[1]}
-                                  className="w-full rounded-lg"
-                                  loading="lazy"
-                                  style={{
-                                    maxHeight: "400px",
-                                    objectFit: "contain",
-                                    backgroundColor: "#f0f0f0",
-                                  }}
+                                  src={src}
+                                  alt={alt}
+                                  className="w-full rounded-lg shadow-lg"
                                 />
-                                {isLocalPreview && (
-                                  <div className="absolute top-2 right-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs">
-                                    アップロード中...
-                                  </div>
+                                {alt && (
+                                  <p className="text-center text-sm text-muted-foreground mt-2">
+                                    {alt}
+                                  </p>
                                 )}
                               </div>
-                            );
-                          }
-                        }
-                        // 見出しの処理
-                        else if (paragraph.startsWith("## ")) {
-                          return (
-                            <h2
-                              key={index}
-                              className="text-2xl font-bold mt-8 mb-4"
-                            >
-                              {paragraph.replace("## ", "")}
-                            </h2>
-                          );
-                        } else if (paragraph.startsWith("### ")) {
-                          return (
-                            <h3
-                              key={index}
-                              className="text-xl font-semibold mt-6 mb-3"
-                            >
-                              {paragraph.replace("### ", "")}
-                            </h3>
-                          );
-                        }
-                        // リストの処理
-                        else if (paragraph.startsWith("- ")) {
-                          return (
-                            <li key={index} className="ml-4 mb-2">
-                              {paragraph.replace("- ", "")}
-                            </li>
-                          );
-                        }
-                        // 通常の段落
-                        else if (paragraph.trim()) {
-                          // 太字、斜体、コードの処理
-                          let processed = paragraph;
-                          processed = processed.replace(
-                            /\*\*(.+?)\*\*/g,
-                            "<strong>$1</strong>"
-                          );
-                          processed = processed.replace(
-                            /\*(.+?)\*/g,
-                            "<em>$1</em>"
-                          );
-                          processed = processed.replace(
-                            /`(.+?)`/g,
-                            '<code class="px-1 py-0.5 bg-muted rounded">$1</code>'
-                          );
-
-                          return (
-                            <p
-                              key={index}
-                              className="mb-4 leading-relaxed"
-                              dangerouslySetInnerHTML={{ __html: processed }}
-                            />
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
-                  </CardContent>
-                </Card>
+                            ),
+                          }}
+                        >
+                          {post.content}
+                        </ReactMarkdown>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
               ) : (
                 <div className="space-y-6">
                   <Card className="bg-card/50 backdrop-blur-sm border-border/50">
@@ -543,15 +551,41 @@ const AdminEdit = ({ isNewPost = false }) => {
                           >
                             <Italic className="w-4 h-4" />
                           </Button>
-                          <Button
-                            type="button"
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => insertTextAtCursor("\n## ")}
-                            title="見出し"
-                          >
-                            <Heading2 className="w-4 h-4" />
-                          </Button>
+
+                          {/* 見出しボタンをグループ化 */}
+                          <div className="flex border border-border rounded-md">
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => insertTextAtCursor("\n## ")}
+                              title="見出し2 (##)"
+                              className="rounded-r-none border-r border-border"
+                            >
+                              <Heading2 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => insertTextAtCursor("\n### ")}
+                              title="見出し3 (###)"
+                              className="rounded-none border-r border-border"
+                            >
+                              <Heading3 className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => insertTextAtCursor("\n#### ")}
+                              title="見出し4 (####)"
+                              className="rounded-l-none"
+                            >
+                              <Heading4 className="w-4 h-4" />
+                            </Button>
+                          </div>
+
                           <Button
                             type="button"
                             variant="ghost"
