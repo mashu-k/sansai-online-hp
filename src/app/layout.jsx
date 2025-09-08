@@ -6,7 +6,7 @@ import ThemeProvider from "@/components/ThemeProvider";
 
 export const metadata = {
   title: "SANSAI ONLINE",
-  description: "未踏の世界への冒険",
+  description: "山菜採りオンライン",
 };
 
 export default function RootLayout({ children }) {

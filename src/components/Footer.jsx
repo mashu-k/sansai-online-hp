@@ -2,6 +2,7 @@
 import React from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { LOGO_IMAGES } from "../data/images.js";
 import {
   Mountain,
   Mail,
@@ -22,10 +23,11 @@ const Footer = () => {
           {/* ブランド情報 */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Mountain className="h-8 w-8 text-accent" />
-              <h3 className="text-2xl font-bold text-gradient">
-                SANSAI ONLINE
-              </h3>
+              <img
+                src={LOGO_IMAGES.longWhite}
+                alt="SANSAI ONLINE"
+                className="h-16 w-auto"
+              />
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               未踏の世界への冒険を通じて、登山の美しさと魅力を伝える3人のチームです。

@@ -5,11 +5,26 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { Button } from "./ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
+import { useTheme } from "next-themes";
+import { LOGO_IMAGES } from "../data/images.js";
 
 const Navigation = () => {
+  const { theme } = useTheme();
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+
+  // ハイドレーション問題を防ぐ
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // テーマに応じてロゴを選択
+  const getLogoSource = () => {
+    if (!mounted) return LOGO_IMAGES.primary; // 初期表示時はデフォルト
+    return theme === "dark" ? LOGO_IMAGES.primaryWhite : LOGO_IMAGES.primary;
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -40,9 +55,11 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <Link href="/" className="flex items-center space-x-2">
-            <span className="text-xl font-bold text-gradient">
-              SANSAI ONLINE
-            </span>
+            <img
+              src={getLogoSource()}
+              alt="SANSAI ONLINE"
+              className="h-16 w-auto transition-opacity duration-300"
+            />
           </Link>
 
           {/* デスクトップメニュー */}

@@ -3,14 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "../ui/button";
 import { Card, CardContent } from "../ui/card";
-import {
-  Mountain,
-  Users,
-  Camera,
-  Youtube,
-  ArrowRight,
-  ChevronDown,
-} from "lucide-react";
+import { Youtube, ArrowRight, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { db } from "@/lib/firebase";
 import {
@@ -22,12 +15,16 @@ import {
   limit,
 } from "firebase/firestore";
 
-// 画像のインポート
+// 画像のインポート部分を修正
 import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
-import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
-import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
-import mountainImage4 from "../../assets/7O7pjhDJ1SN1.jpg";
-import mountainImage5 from "../../assets/a6CgwvylfNmr.jpg";
+
+// ギャラリー画像のパスを文字列として定義
+const galleryImages = [
+  "/img/page/gallery/gallery-1.JPG",
+  "/img/page/gallery/gallery-2.JPG",
+  "/img/page/gallery/gallery-3.JPG",
+  "/img/page/gallery/gallery-4.JPG",
+];
 
 const Home = () => {
   const { scrollY } = useScroll();
@@ -87,13 +84,6 @@ const Home = () => {
     }
   };
 
-  const galleryImages = [
-    mountainImage4,
-    mountainImage5,
-    mountainImage1,
-    mountainImage2,
-  ];
-
   return (
     <div className="min-h-screen bg-background text-foreground scroll-smooth">
       {/* ヒーローセクション */}
@@ -112,41 +102,23 @@ const Home = () => {
           className="relative z-10 text-center px-4 max-w-4xl mx-auto"
           style={{ opacity }}
         >
-          <motion.h1
-            className="text-6xl md:text-8xl font-thin mb-6 text-gradient"
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.5 }}
           >
-            SANSAI ONLINE
-          </motion.h1>
-
-          <motion.p
-            className="text-xl md:text-2xl mb-8 text-muted-foreground font-light"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, delay: 0.8 }}
-          >
-            未踏の世界への冒険
-          </motion.p>
+            <img
+              src="/img/logo/eng_png/whiteOnlyText.png"
+              alt="SANSAI ONLINE"
+              className="h-24 md:h-32 w-auto mx-auto mb-6"
+            />
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.1 }}
           >
-            <Button
-              size="lg"
-              className="bg-primary hover:bg-primary/80 text-primary-foreground px-8 py-4 text-lg"
-              onClick={() =>
-                document
-                  .getElementById("mission")
-                  .scrollIntoView({ behavior: "smooth" })
-              }
-            >
-              冒険を始める
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Button>
           </motion.div>
         </motion.div>
 
@@ -155,7 +127,17 @@ const Home = () => {
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          <ChevronDown className="h-8 w-8 text-white/60" />
+          <button
+            onClick={() =>
+              document
+                .getElementById("mission")
+                .scrollIntoView({ behavior: "smooth" })
+            }
+            className="text-white/60 hover:text-white transition-colors duration-300"
+            aria-label="ミッションセクションにスクロール"
+          >
+            <ChevronDown className="h-8 w-8" />
+          </button>
         </motion.div>
       </section>
 
@@ -199,33 +181,20 @@ const Home = () => {
             </motion.div>
 
             <motion.div
-              className="grid grid-cols-3 gap-4"
+              className="grid gap-4"
               initial={{ opacity: 0, x: 50 }}
               animate={isVisible.mission ? { opacity: 1, x: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.4 }}
             >
-              <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50">
-                <CardContent className="p-6 text-center">
-                  <Mountain className="h-12 w-12 mx-auto mb-4 text-accent" />
-                  <h4 className="font-medium text-card-foreground">未踏の山</h4>
-                </CardContent>
-              </Card>
-              <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50">
-                <CardContent className="p-6 text-center">
-                  <Users className="h-12 w-12 mx-auto mb-4 text-accent" />
-                  <h4 className="font-medium text-card-foreground">
-                    3人のチーム
-                  </h4>
-                </CardContent>
-              </Card>
-              <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50">
-                <CardContent className="p-6 text-center">
-                  <Camera className="h-12 w-12 mx-auto mb-4 text-accent" />
-                  <h4 className="font-medium text-card-foreground">
-                    記録と共有
-                  </h4>
-                </CardContent>
-              </Card>
+              <div className="w-full">
+                <iframe
+                  src="https://lumalabs.ai/embed/b7ca7404-1097-495e-a2a3-a23af5e3d7a2?mode=sparkles&background=%23ffffff&color=%23000000&showTitle=true&loadBg=true&logoPosition=bottom-left&infoPosition=bottom-right&cinematicVideo=undefined&showMenu=false"
+                  height="300"
+                  title="rahmanZom"
+                  style={{ border: "none" }}
+                  className="rounded-lg shadow-lg w-full"
+                />
+              </div>
             </motion.div>
           </div>
         </div>
@@ -241,10 +210,9 @@ const Home = () => {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-4xl md:text-5xl font-thin mb-6 text-gradient">
-              ADVENTURES
+              BLOG
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-            <p className="text-xl text-muted-foreground">最新の冒険記録</p>
           </motion.div>
 
           {loading ? (
@@ -314,11 +282,10 @@ const Home = () => {
               GALLERY
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-            <p className="text-xl text-muted-foreground">美しい山岳風景</p>
           </motion.div>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {galleryImages.map((image, index) => (
+            {galleryImages.map((imagePath, index) => (
               <motion.div
                 key={index}
                 className="aspect-square overflow-hidden rounded-lg"
@@ -329,9 +296,11 @@ const Home = () => {
               >
                 <Link href="/gallery">
                   <img
-                    src={image}
-                    alt={`Mountain view ${index + 1}`}
-                    className="w-full h-full object-cover cursor-pointer"
+                    src={imagePath}
+                    alt={`Gallery image ${index + 1}`}
+                    className="w-full h-full object-cover cursor-pointer transition-transform duration-300 hover:scale-110"
+                    loading="lazy"
+                    decoding="async"
                   />
                 </Link>
               </motion.div>
@@ -349,7 +318,7 @@ const Home = () => {
             transition={{ duration: 0.8 }}
           >
             <h2 className="text-4xl md:text-5xl font-thin mb-6 text-gradient">
-              JOIN OUR ADVENTURE
+              ADVENTURE
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
             <p className="text-xl text-muted-foreground mb-12">

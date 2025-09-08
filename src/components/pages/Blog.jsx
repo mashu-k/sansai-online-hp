@@ -4,7 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Calendar, Clock, ArrowRight, Search } from "lucide-react";
+import { Calendar, ArrowRight, Search } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
@@ -199,10 +199,6 @@ const Blog = () => {
                           <div className="flex items-center text-muted-foreground text-sm">
                             <Calendar className="h-4 w-4 mr-1" />
                             {post.date}
-                          </div>
-                          <div className="flex items-center text-muted-foreground text-sm">
-                            <Clock className="h-4 w-4 mr-1" />
-                            {post.readTime}
                           </div>
                         </div>
 

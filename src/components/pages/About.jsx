@@ -4,32 +4,25 @@ import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { Mountain, Users, Camera, Target, Heart, Compass } from "lucide-react";
 
-// 画像のインポート
-import heroImage from "../../assets/Y9uxgQCqF1sY.jpg";
-import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
-
 const About = () => {
   const teamMembers = [
     {
-      name: "田中 太郎",
-      role: "リーダー・登山ガイド",
-      experience: "15年",
-      specialty: "高山登山・雪山登山",
-      description: "大学山岳部出身。アルプス、ヒマラヤでの豊富な経験を持つ。",
+      name: "川嵜摩周",
+      nameEng: "Mashu Kawasaki",
+      description: "明治大学出身",
+      image: "/img/member/mashu.jpg",
     },
     {
-      name: "佐藤 次郎",
-      role: "フォトグラファー",
-      experience: "12年",
-      specialty: "山岳写真・動画撮影",
-      description: "山岳風景の美しさを写真と映像で記録し続けている。",
+      name: "橋本哲",
+      nameEng: "Tetsu Hashimoto",
+      description: "東京農大出身",
+      image: "/img/member/tetsu.jpg",
     },
     {
-      name: "鈴木 三郎",
-      role: "装備・安全管理",
-      experience: "10年",
-      specialty: "クライミング・救助技術",
-      description: "チームの安全を支える技術と知識を持つスペシャリスト。",
+      name: "河内皓亮",
+      nameEng: "Kosuke Kawachi",
+      description: "信州大学出身",
+      image: "/img/member/kosuke.jpg",
     },
   ];
 
@@ -65,7 +58,7 @@ const About = () => {
       <section className="relative py-32 px-4 overflow-hidden">
         <div
           className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${heroImage})` }}
+          style={{ backgroundImage: "url(/img/page/about/gallery-4.jpg)" }}
         />
         <div className="absolute inset-0 hero-gradient" />
 
@@ -132,54 +125,11 @@ const About = () => {
               transition={{ duration: 0.8, delay: 0.2 }}
             >
               <img
-                src={mountainImage1}
+                src="/img/page/about/bg.jpg"
                 alt="Mountain landscape"
                 className="w-full rounded-lg shadow-2xl"
               />
             </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* 価値観セクション */}
-      <section className="py-20 px-4 bg-card/20">
-        <div className="max-w-6xl mx-auto">
-          <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <h2 className="text-4xl font-thin mb-6 text-gradient">
-              Our Values
-            </h2>
-            <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-            <p className="text-xl text-muted-foreground">
-              私たちが大切にしている価値観
-            </p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {values.map((value, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: index * 0.1 }}
-              >
-                <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 h-full">
-                  <CardContent className="p-6 text-center">
-                    <value.icon className="h-12 w-12 mx-auto mb-4 text-accent" />
-                    <h3 className="text-lg font-medium mb-3 text-card-foreground">
-                      {value.title}
-                    </h3>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {value.description}
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
           </div>
         </div>
       </section>
@@ -193,10 +143,10 @@ const About = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl font-thin mb-6 text-gradient">Our Team</h2>
+            <h2 className="text-4xl font-thin mb-6 text-gradient">Members</h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
             <p className="text-xl text-muted-foreground">
-              3人の専門家が織りなすチームワーク
+              {/* 大学山岳部出身 */}
             </p>
           </motion.div>
 
@@ -210,19 +160,17 @@ const About = () => {
               >
                 <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50">
                   <CardContent className="p-6 text-center">
-                    <div className="w-24 h-24 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
-                      <Users className="h-12 w-12 text-accent" />
+                    <div className="w-24 h-24 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-xl font-medium mb-2 text-card-foreground">
                       {member.name}
                     </h3>
-                    <p className="text-accent mb-2">{member.role}</p>
-                    <p className="text-muted-foreground text-sm mb-3">
-                      経験年数: {member.experience}
-                    </p>
-                    <p className="text-muted-foreground text-sm mb-4">
-                      専門: {member.specialty}
-                    </p>
+                    <p className="text-accent mb-2">{member.nameEng}</p>
                     <p className="text-muted-foreground text-sm leading-relaxed">
                       {member.description}
                     </p>
@@ -230,46 +178,6 @@ const About = () => {
                 </Card>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 統計セクション */}
-      <section className="py-20 px-4 bg-card/20">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <div className="text-4xl font-bold text-accent mb-2">50+</div>
-              <div className="text-muted-foreground">登頂した山</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
-            >
-              <div className="text-4xl font-bold text-accent mb-2">15</div>
-              <div className="text-muted-foreground">年の経験</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-            >
-              <div className="text-4xl font-bold text-accent mb-2">1000+</div>
-              <div className="text-muted-foreground">撮影した写真</div>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-            >
-              <div className="text-4xl font-bold text-accent mb-2">3</div>
-              <div className="text-muted-foreground">チームメンバー</div>
-            </motion.div>
           </div>
         </div>
       </section>

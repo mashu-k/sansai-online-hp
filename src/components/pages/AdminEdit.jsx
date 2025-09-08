@@ -677,7 +677,7 @@ const AdminEdit = ({ isNewPost = false }) => {
                       <label className="block text-sm font-medium mb-2">
                         カテゴリー
                       </label>
-                      <Input
+                      <select
                         value={post.category}
                         onChange={(e) =>
                           setPost((prev) => ({
@@ -685,8 +685,21 @@ const AdminEdit = ({ isNewPost = false }) => {
                             category: e.target.value,
                           }))
                         }
-                        placeholder="山スキー、厳冬期登山など"
-                      />
+                        className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="">選択してください</option>
+                        <option value="海外遠征">海外遠征</option>
+                        <option value="冬期クライミング">
+                          冬期クライミング
+                        </option>
+                        <option value="フリークライミング">
+                          フリークライミング
+                        </option>
+                        <option value="沢登り">沢登り</option>
+                        <option value="スキー">スキー</option>
+                        <option value="その他">その他</option>
+                        <option value="お知らせ">お知らせ</option>
+                      </select>
                     </div>
 
                     <div>
