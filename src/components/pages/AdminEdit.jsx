@@ -119,20 +119,27 @@ const AdminEdit = ({ isNewPost = false }) => {
       };
 
       if (isNew) {
-        await addDoc(collection(db, "posts"), {
+        const docRef = await addDoc(collection(db, "posts"), {
           ...postData,
           createdAt: serverTimestamp(),
         });
+        console.log("新規記事を作成しました。ID:", docRef.id);
       } else if (id) {
         await setDoc(doc(db, "posts", id), postData, { merge: true });
+        console.log("記事を更新しました。ID:", id);
       } else {
         console.error("IDが指定されていません");
+        alert("エラー: IDが指定されていません");
         return;
       }
 
+      alert("保存に成功しました！");
       router.push("/admin");
     } catch (error) {
       console.error("保存エラー:", error);
+      console.error("エラーの詳細:", error.message);
+      console.error("エラーコード:", error.code);
+      alert(`保存に失敗しました: ${error.message}`);
     } finally {
       setSaving(false);
     }

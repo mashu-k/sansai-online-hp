@@ -230,7 +230,7 @@ const Contact = () => {
                     ))}
                   </div>
                   <p className="text-muted-foreground text-sm mt-4">
-                    最新の冒険記録や美しい山岳写真をSNSで配信中
+                    最新の登山記録やステキな山の写真をSNSで配信中
                   </p>
                 </CardContent>
               </Card>

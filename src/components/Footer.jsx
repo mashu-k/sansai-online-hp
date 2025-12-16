@@ -30,8 +30,7 @@ const Footer = () => {
               />
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              未踏の世界への冒険を通じて、登山の美しさと魅力を伝える3人のチームです。
-              私たちの記録と体験をお楽しみください。
+              目的はただ一つ。山菜を採ること。互いにロープを結び、森林限界を超えた先に未だ見ぬ山菜を収穫することができるのだろうか。
             </p>
             <div className="flex space-x-4">
               <a
@@ -69,31 +68,31 @@ const Footer = () => {
                 href="/"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                ホーム
+                Home
               </Link>
               <Link
                 href="/blog"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                ブログ
+                Blog
               </Link>
               <Link
                 href="/gallery"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                フォトギャラリー
+                Photo Gallery
               </Link>
               <Link
                 href="/about"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                私たちについて
+                About Us
               </Link>
               <Link
                 href="/contact"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                お問い合わせ
+                Contact
               </Link>
             </nav>
           </div>
@@ -141,23 +140,16 @@ const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Mail className="h-4 w-4 text-accent flex-shrink-0" />
-                <a
-                  href="mailto:info@sansai.online"
+                <div
                   className="text-muted-foreground hover:text-accent transition-colors text-sm"
                 >
-                  info@sansai.online
-                </a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <MapPin className="h-4 w-4 text-accent flex-shrink-0" />
-                <span className="text-muted-foreground text-sm">
-                  日本全国の山々
-                </span>
+                  sansaitorionline@gmail.com
+                </div>
               </div>
               <div className="flex items-center space-x-3">
                 <Youtube className="h-4 w-4 text-accent flex-shrink-0" />
                 <a
-                  href="https://youtube.com/@sansaionline"
+                  href="https://youtube.com/@sansai_online"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-muted-foreground hover:text-accent transition-colors text-sm"

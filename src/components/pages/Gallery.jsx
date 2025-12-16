@@ -53,19 +53,11 @@ const Gallery = () => {
             PHOTO GALLERY
           </motion.h1>
           <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-          <motion.p
-            className="text-xl text-muted-foreground max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            未踏の世界で撮影した美しい山岳風景をお楽しみください
-          </motion.p>
         </div>
       </section>
 
       {/* フィルターセクション */}
-      <section className="py-8 px-4">
+      {/* <section className="py-8 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="flex flex-wrap justify-center gap-4">
             {categories.map((category) => (
@@ -80,7 +72,7 @@ const Gallery = () => {
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
 
       {/* ギャラリーグリッド */}
       <section className="py-12 px-4">

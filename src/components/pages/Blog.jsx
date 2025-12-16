@@ -31,8 +31,8 @@ const Blog = () => {
       const postsRef = collection(db, "posts");
       const q = query(
         postsRef,
-        where("status", "==", "published")
-        // orderBy("createdAt", "desc") // インデックス作成後に有効化
+        where("status", "==", "published"),
+        orderBy("createdAt", "desc")
       );
       const snapshot = await getDocs(q);
       const posts = snapshot.docs.map((doc) => ({
@@ -43,11 +43,17 @@ const Blog = () => {
           doc.data().date,
       }));
       setBlogPosts(posts);
+      console.log("公開記事を取得:", posts.length);
 
       // カテゴリーとタグの統計を計算
       calculateStats(posts);
     } catch (error) {
       console.error("記事の取得に失敗しました:", error);
+      console.error("エラーの詳細:", error.message);
+      console.error("エラーコード:", error.code);
+      // エラーが発生しても空の配列を設定
+      setBlogPosts([]);
+      calculateStats([]);
     } finally {
       setLoading(false);
     }

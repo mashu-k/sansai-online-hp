@@ -77,8 +77,13 @@ const Home = () => {
         image: doc.data().thumbnail || mountainImage1, // サムネイルがない場合のフォールバック
       }));
       setAdventures(posts);
+      console.log("ホームページ: 最新記事を取得:", posts.length);
     } catch (error) {
       console.error("最新記事の取得に失敗しました:", error);
+      console.error("エラーの詳細:", error.message);
+      console.error("エラーコード:", error.code);
+      // エラーが発生しても空の配列を設定
+      setAdventures([]);
     } finally {
       setLoading(false);
     }
@@ -110,7 +115,7 @@ const Home = () => {
             <img
               src="/img/logo/eng_png/whiteOnlyText.png"
               alt="SANSAI ONLINE"
-              className="h-24 md:h-32 w-auto mx-auto mb-6"
+              className="w-auto mx-auto mb-6"
             />
           </motion.div>
 
@@ -118,8 +123,7 @@ const Home = () => {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 1.1 }}
-          >
-          </motion.div>
+          ></motion.div>
         </motion.div>
 
         <motion.div
@@ -150,7 +154,7 @@ const Home = () => {
             animate={isVisible.mission ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-thin mb-6 text-gradient">
+            <h2 className="text-4xl md:text-5xl font-thin mb-6 dark:text-gradient">
               ABOUT US
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
@@ -166,17 +170,13 @@ const Home = () => {
                 ❝山菜採りオンライン❞
               </h3>
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-                未だかつて誰も登ったことのない山があるのをご存じだろうか？
+                山菜を求めて3人の若者が集まった。
               </p>
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-                また、誰もが登っているような山にも手付かずの場所が残されていることもある。
+                大学山岳部で鍛えた登山技術を総動員して未踏の世界を冒険する。
               </p>
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-                この情報に溢れた現代においてもなお、国内外には未だ人間が足を踏み入れていない場所が眠っているのである。
-              </p>
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                そんな<strong className="text-accent">未踏の世界</strong>
-                へ冒険するため、3人の若者が集まった。
+                未だ収穫は無し。しかし、その日を夢見て今日も森林限界を超えていく。
               </p>
             </motion.div>
 
@@ -209,7 +209,7 @@ const Home = () => {
             animate={isVisible.adventures ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-thin mb-6 text-gradient">
+            <h2 className="text-4xl md:text-5xl font-thin mb-6 dark:text-gradient">
               BLOG
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
@@ -278,7 +278,7 @@ const Home = () => {
             animate={isVisible.gallery ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-thin mb-6 text-gradient">
+            <h2 className="text-4xl md:text-5xl font-thin mb-6 dark:text-gradient">
               GALLERY
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
@@ -317,7 +317,7 @@ const Home = () => {
             animate={isVisible.contact ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.8 }}
           >
-            <h2 className="text-4xl md:text-5xl font-thin mb-6 text-gradient">
+            <h2 className="text-4xl md:text-5xl font-thin mb-6 dark:text-gradient">
               ADVENTURE
             </h2>
             <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>

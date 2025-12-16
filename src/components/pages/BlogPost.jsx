@@ -47,34 +47,19 @@ const BlogPost = () => {
           date:
             data.createdAt?.toDate().toLocaleDateString("ja-JP") || data.date,
         });
+        console.log("記事を取得しました:", docSnap.id);
 
         // 関連記事を取得（同じカテゴリの記事）
         if (data.category) {
           fetchRelatedPosts(data.category, docSnap.id);
         }
       } else {
-        // ダミーデータにフォールバック
-        const dummyPost = dummyPosts[id];
-        if (dummyPost) {
-          setPost(dummyPost);
-          // ダミーデータの関連記事
-          const dummyRelated = Object.values(dummyPosts)
-            .filter((p) => p.id !== parseInt(id))
-            .slice(0, 2);
-          setRelatedPosts(dummyRelated);
-        }
+        console.log("記事が見つかりません。ID:", id);
       }
     } catch (error) {
       console.error("記事の取得に失敗しました:", error);
-      // エラー時もダミーデータを試す
-      const dummyPost = dummyPosts[id];
-      if (dummyPost) {
-        setPost(dummyPost);
-        const dummyRelated = Object.values(dummyPosts)
-          .filter((p) => p.id !== parseInt(id))
-          .slice(0, 2);
-        setRelatedPosts(dummyRelated);
-      }
+      console.error("エラーの詳細:", error.message);
+      console.error("エラーコード:", error.code);
     } finally {
       setLoading(false);
     }
@@ -100,8 +85,12 @@ const BlogPost = () => {
         .filter((p) => p.id !== currentPostId)
         .slice(0, 2);
       setRelatedPosts(posts);
+      console.log("関連記事を取得:", posts.length);
     } catch (error) {
       console.error("関連記事の取得に失敗しました:", error);
+      console.error("エラーの詳細:", error.message);
+      console.error("エラーコード:", error.code);
+      setRelatedPosts([]);
     }
   };
 
@@ -140,7 +129,7 @@ const BlogPost = () => {
 
         <div className="relative z-10 h-full flex items-end">
           <div className="max-w-7xl mx-auto px-4 pb-12 w-full">
-            <Link href="/blog" className="inline-block mb-6">
+            <Link href="/blog" className="block mb-6">
               <Button
                 variant="outline"
                 size="sm"
@@ -206,119 +195,114 @@ const BlogPost = () => {
                 <div className="text-xl text-muted-foreground mb-8 leading-relaxed">
                   {post.excerpt}
                 </div>
-
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardContent className="p-8">
-                    <div className="prose prose-lg max-w-none">
-                      <ReactMarkdown
-                        remarkPlugins={[remarkGfm]}
-                        components={{
-                          h2: ({ children }) => (
-                            <h2 className="text-3xl font-bold mt-12 mb-6 text-accent border-b-2 border-accent/20 pb-2">
-                              {children}
-                            </h2>
-                          ),
-                          h3: ({ children }) => (
-                            <h3 className="text-2xl font-semibold mt-10 mb-4 text-accent/90 border-l-4 border-accent pl-4">
-                              {children}
-                            </h3>
-                          ),
-                          h4: ({ children }) => (
-                            <h4 className="text-xl font-medium mt-8 mb-3 text-accent/80 bg-accent/5 px-3 py-2 rounded-lg">
-                              {children}
-                            </h4>
-                          ),
-                          p: ({ children, ...props }) => {
-                            // 画像が含まれている場合は、pタグをdivに変更
-                            if (
-                              React.Children.toArray(children).some(
-                                (child) =>
-                                  React.isValidElement(child) &&
-                                  child.type === "img"
-                              )
-                            ) {
-                              return (
-                                <div
-                                  className="mb-6 leading-relaxed text-foreground/90 text-base"
-                                  {...props}
-                                >
-                                  {children}
-                                </div>
-                              );
-                            }
-                            return (
-                              <p
-                                className="mb-6 leading-relaxed text-foreground/90 text-base"
-                                {...props}
-                              >
-                                {children}
-                              </p>
-                            );
-                          },
-                          strong: ({ children }) => (
-                            <strong className="text-accent font-semibold">
-                              {children}
-                            </strong>
-                          ),
-                          em: ({ children }) => (
-                            <em className="italic text-foreground/80">
-                              {children}
-                            </em>
-                          ),
-                          code: ({ children }) => (
-                            <code className="px-2 py-1 bg-muted rounded text-sm font-mono text-accent border border-border/30">
-                              {children}
-                            </code>
-                          ),
-                          li: ({ children }) => (
-                            <li className="ml-6 mb-3 text-foreground/90 leading-relaxed">
-                              {children}
-                            </li>
-                          ),
-                          ul: ({ children }) => (
-                            <ul className="mb-6 list-disc">{children}</ul>
-                          ),
-                          ol: ({ children }) => (
-                            <ol className="mb-6 list-decimal list-inside">
-                              {children}
-                            </ol>
-                          ),
-                          blockquote: ({ children }) => (
-                            <blockquote className="border-l-4 border-accent/40 pl-6 py-4 my-6 bg-accent/5 rounded-r-lg italic text-foreground/80">
-                              {children}
-                            </blockquote>
-                          ),
-                          a: ({ href, children }) => (
-                            <a
-                              href={href}
-                              className="text-accent hover:text-accent/80 hover:underline transition-colors duration-200 underline-offset-2"
-                              target="_blank"
-                              rel="noopener noreferrer"
+                <div className="prose prose-lg max-w-none">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      h2: ({ children }) => (
+                        <h2 className="text-3xl font-bold mt-12 mb-6 border-b-2 border-accent/20 pb-2">
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children }) => (
+                        <h3 className="text-2xl font-semibold mt-10 mb-4 border-l-4 border-accent pl-4">
+                          {children}
+                        </h3>
+                      ),
+                      h4: ({ children }) => (
+                        <h4 className="text-xl font-medium mt-8 mb-3 text-accent/80 bg-accent/5 px-3 py-2 rounded-lg">
+                          {children}
+                        </h4>
+                      ),
+                      p: ({ children, ...props }) => {
+                        // 画像が含まれている場合は、pタグをdivに変更
+                        if (
+                          React.Children.toArray(children).some(
+                            (child) =>
+                              React.isValidElement(child) &&
+                              child.type === "img"
+                          )
+                        ) {
+                          return (
+                            <div
+                              className="mb-6 leading-relaxed text-foreground/90 text-base"
+                              {...props}
                             >
                               {children}
-                            </a>
-                          ),
-                          img: ({ src, alt }) => (
-                            <div className="my-8">
-                              <img
-                                src={src}
-                                alt={alt}
-                                className="w-full rounded-lg shadow-lg border border-border/30"
-                              />
-                              {alt && (
-                                <div className="text-center text-sm text-muted-foreground mt-3 italic">
-                                  {alt}
-                                </div>
-                              )}
                             </div>
-                          ),
-                        }}
-                      >
-                        {post.content}
-                      </ReactMarkdown>
-                    </div>
-                  </CardContent>
-                </Card>
+                          );
+                        }
+                        return (
+                          <p
+                            className="mb-6 leading-relaxed text-foreground/90 text-base"
+                            {...props}
+                          >
+                            {children}
+                          </p>
+                        );
+                      },
+                      strong: ({ children }) => (
+                        <strong className="text-accent font-semibold">
+                          {children}
+                        </strong>
+                      ),
+                      em: ({ children }) => (
+                        <em className="italic text-foreground/80">
+                          {children}
+                        </em>
+                      ),
+                      code: ({ children }) => (
+                        <code className="px-2 py-1 bg-muted rounded text-sm font-mono text-accent border border-border/30">
+                          {children}
+                        </code>
+                      ),
+                      li: ({ children }) => (
+                        <li className="ml-6 mb-3 text-foreground/90 leading-relaxed">
+                          {children}
+                        </li>
+                      ),
+                      ul: ({ children }) => (
+                        <ul className="mb-6 list-disc">{children}</ul>
+                      ),
+                      ol: ({ children }) => (
+                        <ol className="mb-6 list-decimal list-inside">
+                          {children}
+                        </ol>
+                      ),
+                      blockquote: ({ children }) => (
+                        <blockquote className="border-l-4 border-accent/40 pl-6 py-4 my-6 bg-accent/5 rounded-r-lg italic text-foreground/80">
+                          {children}
+                        </blockquote>
+                      ),
+                      a: ({ href, children }) => (
+                        <a
+                          href={href}
+                          className="text-accent hover:text-accent/80 hover:underline transition-colors duration-200 underline-offset-2"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          {children}
+                        </a>
+                      ),
+                      img: ({ src, alt }) => (
+                        <div className="my-8">
+                          <img
+                            src={src}
+                            alt={alt}
+                            className="w-full rounded-lg shadow-lg border border-border/30"
+                          />
+                          {alt && (
+                            <div className="text-center text-sm text-muted-foreground mt-3 italic">
+                              {alt}
+                            </div>
+                          )}
+                        </div>
+                      ),
+                    }}
+                  >
+                    {post.content}
+                  </ReactMarkdown>
+                </div>
 
                 {/* 記事下の関連記事 */}
                 <div className="mt-12">

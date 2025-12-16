@@ -30,13 +30,14 @@ const Admin = () => {
     try {
       setLoading(true);
       const postsRef = collection(db, "posts");
-      let q = postsRef;
+      let q;
 
       if (filter !== "all") {
-        q = query(postsRef, where("status", "==", filter));
+        q = query(postsRef, where("status", "==", filter), orderBy("createdAt", "desc"));
+      } else {
+        q = query(postsRef, orderBy("createdAt", "desc"));
       }
 
-      q = query(q, orderBy("createdAt", "desc"));
       const snapshot = await getDocs(q);
       const postsData = snapshot.docs.map((doc) => ({
         id: doc.id,
@@ -46,8 +47,12 @@ const Admin = () => {
           doc.data().date,
       }));
       setPosts(postsData);
+      console.log("取得した記事数:", postsData.length);
     } catch (error) {
       console.error("記事の取得に失敗しました:", error);
+      console.error("エラーの詳細:", error.message);
+      // エラーが発生しても空の配列を設定して、UIが表示されるようにする
+      setPosts([]);
     } finally {
       setLoading(false);
     }

@@ -72,14 +72,6 @@ const About = () => {
             ABOUT US
           </motion.h1>
           <div className="w-24 h-1 bg-accent mx-auto mb-8"></div>
-          <motion.p
-            className="text-xl text-white/90 max-w-2xl mx-auto"
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-          >
-            未踏の世界への冒険を通じて、山の美しさと魅力を伝える3人のチーム
-          </motion.p>
         </div>
       </section>
 
@@ -100,22 +92,14 @@ const About = () => {
               <h3 className="text-2xl font-light mb-6 text-accent">
                 ❝山菜採りオンライン❞
               </h3>
-
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-                未だかつて誰も登ったことのない山があるのをご存じだろうか？
+                山菜を求めて3人の若者が集まった。
               </p>
-
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-                また、誰もが登っているような山にも手付かずの場所が残されていることもある。
+                大学山岳部で鍛えた登山技術を総動員して未踏の世界を冒険する。
               </p>
-
               <p className="text-lg leading-relaxed mb-6 text-muted-foreground">
-                この情報に溢れた現代においてもなお、国内外には未だ人間が足を踏み入れていない場所が眠っているのである。
-              </p>
-
-              <p className="text-lg leading-relaxed text-muted-foreground">
-                そんな<strong className="text-accent">未踏の世界</strong>
-                へ冒険するため、3人の若者が集まった。
+                未だ収穫は無し。しかし、その日を夢見て今日も森林限界を超えていく。
               </p>
             </motion.div>
 
