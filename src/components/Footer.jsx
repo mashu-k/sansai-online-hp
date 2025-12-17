@@ -30,7 +30,7 @@ const Footer = () => {
               />
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              目的はただ一つ。山菜を採ること。互いにロープを結び、森林限界を超えた先に未だ見ぬ山菜を収穫することができるのだろうか。
+              互いにロープを結び、森林限界を超えた先に未だ見ぬ山菜を収穫することができるのだろうか。
             </p>
             <div className="flex space-x-4">
               <a

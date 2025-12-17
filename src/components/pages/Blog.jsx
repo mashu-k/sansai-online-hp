@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
 import { Calendar, ArrowRight, Search } from "lucide-react";
@@ -96,27 +97,6 @@ const Blog = () => {
     setPopularTags(sortedTags);
   };
 
-  const relatedPosts = [
-    {
-      id: 6,
-      title: "初心者向け登山ガイド",
-      date: "2024年2月15日",
-      thumbnail: mountainImage1,
-    },
-    {
-      id: 7,
-      title: "山小屋泊まりのコツ",
-      date: "2024年1月20日",
-      thumbnail: mountainImage2,
-    },
-    {
-      id: 8,
-      title: "登山写真撮影テクニック",
-      date: "2024年1月10日",
-      thumbnail: mountainImage3,
-    },
-  ];
-
   // Firebase から取得した記事がない場合は空配列を使用
   const displayPosts = blogPosts.length > 0 ? blogPosts : [];
 
@@ -186,7 +166,7 @@ const Blog = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
           >
-            未踏の世界への冒険記録と山岳体験を共有します
+            山行の参考に。なんちって。
           </motion.p>
         </div>
       </section>
@@ -206,11 +186,13 @@ const Blog = () => {
                     transition={{ duration: 0.8, delay: index * 0.1 }}
                   >
                     <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden">
-                      <div className="aspect-video overflow-hidden">
-                        <img
+                      <div className="aspect-video overflow-hidden relative">
+                        <Image
                           src={post.thumbnail}
                           alt={post.title}
-                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                          fill
+                          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+                          className="object-cover transition-transform duration-300 hover:scale-110"
                         />
                       </div>
                       <CardContent className="p-6">
@@ -309,8 +291,6 @@ const Blog = () => {
                     </div>
                   </CardContent>
                 </Card>
-
-
 
                 {/* カテゴリー */}
                 <Card className="bg-card/50 backdrop-blur-sm border-border/50">

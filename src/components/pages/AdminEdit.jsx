@@ -35,6 +35,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import imageCompression from "browser-image-compression";
 
 const AdminEdit = ({ isNewPost = false }) => {
   const params = useParams();
@@ -177,13 +178,28 @@ const AdminEdit = ({ isNewPost = false }) => {
     setUploadingThumbnail(true);
 
     try {
+      console.log(`圧縮前サイズ: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+
+      // 画像圧縮オプション
+      const options = {
+        maxSizeMB: 1, // 最大1MB
+        maxWidthOrHeight: 1200, // サムネイルなので1200pxあれば十分
+        useWebWorker: true,
+      };
+
+      // 圧縮実行
+      const compressedFile = await imageCompression(file, options);
+      console.log(
+        `圧縮後サイズ: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`
+      );
+
       // ファイル名を生成
       const timestamp = Date.now();
       const fileName = `thumbnails/${timestamp}_${file.name}`;
 
       // Firebase Storage にアップロード
       const storageRef = ref(storage, fileName);
-      const snapshot = await uploadBytes(storageRef, file);
+      const snapshot = await uploadBytes(storageRef, compressedFile);
       const downloadURL = await getDownloadURL(snapshot.ref);
 
       // サムネイルURLを設定
@@ -278,12 +294,29 @@ const AdminEdit = ({ isNewPost = false }) => {
         [localPreviewUrl]: true,
       }));
 
+      // 画像圧縮オプション
+      const options = {
+        maxSizeMB: 1.5, // 本文画像は少し大きめでもOK
+        maxWidthOrHeight: 1920, // フルHD
+        useWebWorker: true,
+      };
+
+      console.log("画像を圧縮中...");
+      const compressedFile = await imageCompression(file, options);
+      console.log(
+        `圧縮完了: ${(file.size / 1024 / 1024).toFixed(2)}MB -> ${(
+          compressedFile.size /
+          1024 /
+          1024
+        ).toFixed(2)}MB`
+      );
+
       // Firebase Storage にバックグラウンドでアップロード
       console.log("Storage参照を作成中...");
       const storageRef = ref(storage, fileName);
 
       console.log("ファイルをアップロード中...");
-      const snapshot = await uploadBytes(storageRef, file);
+      const snapshot = await uploadBytes(storageRef, compressedFile);
       console.log("アップロード完了:", snapshot);
 
       console.log("ダウンロードURLを取得中...");

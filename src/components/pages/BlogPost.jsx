@@ -7,6 +7,7 @@ import { Badge } from "../ui/badge";
 import { Button } from "../ui/button";
 import { Calendar, Clock, MapPin, User, ArrowLeft, Tag } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { db } from "@/lib/firebase";
 import BlogSidebar from "../BlogSidebar";
 import ReactMarkdown from "react-markdown";
@@ -161,9 +162,12 @@ const BlogPost = () => {
     <div className="min-h-screen bg-background text-foreground pt-20">
       {/* ヒーロー画像 */}
       <section className="relative h-96 overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{ backgroundImage: `url(${post.thumbnail})` }}
+        <Image
+          src={post.thumbnail}
+          alt={post.title}
+          fill
+          priority
+          className="object-cover"
         />
         <div className="absolute inset-0 bg-black/50" />
 
@@ -354,11 +358,13 @@ const BlogPost = () => {
                         href={`/blog/${relatedPost.id}`}
                       >
                         <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full">
-                          <div className="aspect-video overflow-hidden">
-                            <img
+                          <div className="aspect-video overflow-hidden relative">
+                            <Image
                               src={relatedPost.thumbnail}
                               alt={relatedPost.title}
-                              className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                              fill
+                              sizes="(min-width: 768px) 50vw, 100vw"
+                              className="object-cover transition-transform duration-300 hover:scale-110"
                             />
                           </div>
                           <CardContent className="p-4">

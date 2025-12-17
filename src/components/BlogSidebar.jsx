@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -132,12 +133,14 @@ const BlogSidebar = ({ currentPostId }) => {
                 className="block group"
               >
                 <div className="flex gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
-                  <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted">
+                  <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 bg-muted relative">
                     {post.thumbnail ? (
-                      <img
+                      <Image
                         src={post.thumbnail}
                         alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        fill
+                        sizes="64px"
+                        className="object-cover group-hover:scale-110 transition-transform duration-300"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-muted-foreground">
