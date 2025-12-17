@@ -695,6 +695,7 @@ const AdminEdit = ({ isNewPost = false }) => {
                         className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
                       >
                         <option value="">選択してください</option>
+                        <option value="海外遠征">海外遠征</option>
                         <option value="冬山">冬山</option>
                         <option value="スキー">スキー</option>
                         <option value="フリークライミング">

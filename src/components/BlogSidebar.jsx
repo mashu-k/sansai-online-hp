@@ -40,6 +40,7 @@ const BlogSidebar = ({ currentPostId }) => {
 
         // カテゴリー集計
         const categoryCounts = {
+          "海外遠征": 0,
           "冬山": 0,
           "スキー": 0,
           "フリークライミング": 0,

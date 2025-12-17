@@ -94,6 +94,12 @@ const Footer = () => {
             <h4 className="text-lg font-semibold">カテゴリー</h4>
             <nav className="space-y-2">
               <a
+                href="/blog?category=海外遠征"
+                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
+              >
+                海外遠征
+              </a>
+              <a
                 href="/blog?category=冬山"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
