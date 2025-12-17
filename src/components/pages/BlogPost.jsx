@@ -18,6 +18,8 @@ import {
   getDocs,
   query,
   where,
+  orderBy,
+  limit,
 } from "firebase/firestore";
 
 const BlogPost = () => {
@@ -49,10 +51,8 @@ const BlogPost = () => {
         });
         console.log("記事を取得しました:", docSnap.id);
 
-        // 関連記事を取得（同じカテゴリの記事）
-        if (data.category) {
-          fetchRelatedPosts(data.category, docSnap.id);
-        }
+        // 関連記事を取得（タグまたはカテゴリ）
+        fetchRelatedPosts(data.category, docSnap.id, data.tags);
       } else {
         console.log("記事が見つかりません。ID:", id);
       }
@@ -65,16 +65,31 @@ const BlogPost = () => {
     }
   };
 
-  const fetchRelatedPosts = async (category, currentPostId) => {
+  const fetchRelatedPosts = async (category, currentPostId, tags = []) => {
     try {
       const postsRef = collection(db, "posts");
-      const q = query(
-        postsRef,
-        where("status", "==", "published"),
-        where("category", "==", category)
-      );
+      let q;
+
+      // タグがある場合はタグで検索
+      if (tags && tags.length > 0) {
+        q = query(
+          postsRef,
+          where("status", "==", "published"),
+          where("tags", "array-contains-any", tags),
+          orderBy("createdAt", "desc") // 作成日順でソート（必要に応じて）
+        );
+      } else {
+        // タグがない場合はカテゴリーで検索
+        q = query(
+          postsRef,
+          where("status", "==", "published"),
+          where("category", "==", category),
+          orderBy("createdAt", "desc")
+        );
+      }
+
       const snapshot = await getDocs(q);
-      const posts = snapshot.docs
+      let posts = snapshot.docs
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
@@ -82,9 +97,34 @@ const BlogPost = () => {
             doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
             doc.data().date,
         }))
-        .filter((p) => p.id !== currentPostId)
-        .slice(0, 2);
-      setRelatedPosts(posts);
+        .filter((p) => p.id !== currentPostId);
+
+      // タグ検索の場合、カテゴリー検索の結果も混ぜる（件数が少ない場合）
+      // または、タグ検索でヒットしなかった場合にカテゴリー検索を行うなどの調整が可能
+      // ここではシンプルに、タグ検索で不足する場合のフォールバックは複雑になるため
+      // まずはタグ検索の結果を表示し、0件ならカテゴリー検索を行うロジックにする
+
+      if (posts.length === 0) {
+        // タグでもカテゴリーでもヒットしなかった場合、最新記事を表示
+        const recentQ = query(
+          postsRef,
+          where("status", "==", "published"),
+          orderBy("createdAt", "desc"),
+          limit(4) // 自分自身が含まれる可能性があるので多めに取得
+        );
+        const recentSnapshot = await getDocs(recentQ);
+        posts = recentSnapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+            date:
+              doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+              doc.data().date,
+          }))
+          .filter((p) => p.id !== currentPostId);
+      }
+
+      setRelatedPosts(posts.slice(0, 3)); // 表示数を3件に変更（デザインに合わせて調整）
       console.log("関連記事を取得:", posts.length);
     } catch (error) {
       console.error("関連記事の取得に失敗しました:", error);

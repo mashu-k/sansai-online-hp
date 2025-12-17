@@ -30,12 +30,34 @@ const Contact = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // フォーム送信処理（実際の実装では適切なAPIエンドポイントに送信）
-    console.log("Form submitted:", formData);
-    alert("お問い合わせありがとうございます。後日ご連絡いたします。");
-    setFormData({ name: "", email: "", subject: "", message: "" });
+    setIsSubmitting(true);
+
+    try {
+      const response = await fetch("/api/send-mail", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        alert("お問い合わせありがとうございます。送信が完了しました。");
+        setFormData({ name: "", email: "", subject: "", message: "" });
+      } else {
+        const errorData = await response.json();
+        alert(`送信に失敗しました: ${errorData.error || "不明なエラー"}`);
+      }
+    } catch (error) {
+      console.error("送信エラー:", error);
+      alert("送信中にエラーが発生しました。");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const contactInfo = [
@@ -168,9 +190,9 @@ const Contact = () => {
                       />
                     </div>
 
-                    <Button type="submit" className="w-full" size="lg">
+                    <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
                       <Send className="mr-2 h-4 w-4" />
-                      送信する
+                      {isSubmitting ? "送信中..." : "送信する"}
                     </Button>
                   </form>
                 </CardContent>

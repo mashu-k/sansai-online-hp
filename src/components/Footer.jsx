@@ -49,14 +49,6 @@ const Footer = () => {
               >
                 <Instagram className="h-5 w-5" />
               </a>
-              <a
-                href="https://twitter.com/sansaionline"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-accent transition-colors"
-              >
-                <Twitter className="h-5 w-5" />
-              </a>
             </div>
           </div>
 
@@ -102,34 +94,28 @@ const Footer = () => {
             <h4 className="text-lg font-semibold">カテゴリー</h4>
             <nav className="space-y-2">
               <a
-                href="/blog?category=山スキー"
+                href="/blog?category=冬山"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                山スキー
+                冬山
               </a>
               <a
-                href="/blog?category=厳冬期登山"
+                href="/blog?category=スキー"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                厳冬期登山
+                スキー
               </a>
               <a
-                href="/blog?category=スキー滑降"
+                href="/blog?category=フリークライミング"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                スキー滑降
+                フリークライミング
               </a>
               <a
-                href="/blog?category=縦走"
+                href="/blog?category=その他"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
-                縦走
-              </a>
-              <a
-                href="/blog?category=風景"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                風景
+                その他
               </a>
             </nav>
           </div>
@@ -166,26 +152,6 @@ const Footer = () => {
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <div className="text-muted-foreground text-sm">
               © {currentYear} SANSAI ONLINE. All rights reserved.
-            </div>
-            <div className="flex space-x-6 text-sm">
-              <Link
-                href="/privacy"
-                className="text-muted-foreground hover:text-accent transition-colors"
-              >
-                プライバシーポリシー
-              </Link>
-              <Link
-                href="/terms"
-                className="text-muted-foreground hover:text-accent transition-colors"
-              >
-                利用規約
-              </Link>
-              <Link
-                href="/sitemap"
-                className="text-muted-foreground hover:text-accent transition-colors"
-              >
-                サイトマップ
-              </Link>
             </div>
           </div>
         </div>

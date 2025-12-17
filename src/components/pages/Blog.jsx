@@ -120,6 +120,14 @@ const Blog = () => {
   // Firebase から取得した記事がない場合は空配列を使用
   const displayPosts = blogPosts.length > 0 ? blogPosts : [];
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const postsPerPage = 10;
+
+  // 検索やカテゴリー変更時にページを1に戻す
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, selectedCategory]);
+
   const filteredPosts = displayPosts.filter((post) => {
     const matchesSearch =
       post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -128,6 +136,14 @@ const Blog = () => {
       selectedCategory === "all" || post.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  // ページネーション用の計算
+  const indexOfLastPost = currentPage * postsPerPage;
+  const indexOfFirstPost = indexOfLastPost - postsPerPage;
+  const currentPosts = filteredPosts.slice(indexOfFirstPost, indexOfLastPost);
+  const totalPages = Math.ceil(filteredPosts.length / postsPerPage);
+
+  const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
   // 関連記事を実際の記事から取得
   const getRelatedPosts = () => {
@@ -182,7 +198,7 @@ const Blog = () => {
             {/* メインコンテンツエリア */}
             <div className="lg:w-2/3">
               <div className="grid md:grid-cols-2 gap-8">
-                {filteredPosts.map((post, index) => (
+                {currentPosts.map((post, index) => (
                   <motion.div
                     key={post.id}
                     initial={{ opacity: 0, y: 50 }}
@@ -240,25 +256,38 @@ const Blog = () => {
               </div>
 
               {/* ページネーション */}
-              <div className="flex justify-center mt-12">
-                <div className="flex space-x-2">
-                  <Button variant="outline" size="sm">
-                    前へ
-                  </Button>
-                  <Button variant="default" size="sm">
-                    1
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    2
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    3
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    次へ
-                  </Button>
+              {totalPages > 1 && (
+                <div className="flex justify-center mt-12">
+                  <div className="flex space-x-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => paginate(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      前へ
+                    </Button>
+                    {Array.from({ length: totalPages }, (_, i) => (
+                      <Button
+                        key={i + 1}
+                        variant={currentPage === i + 1 ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => paginate(i + 1)}
+                      >
+                        {i + 1}
+                      </Button>
+                    ))}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => paginate(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    >
+                      次へ
+                    </Button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* サイドバー */}
@@ -281,35 +310,7 @@ const Blog = () => {
                   </CardContent>
                 </Card>
 
-                {/* 関連記事 */}
-                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardContent className="p-6">
-                    <h3 className="text-xl font-medium mb-4">関連記事</h3>
-                    <div className="space-y-4">
-                      {getRelatedPosts().map((post) => (
-                        <div key={post.id} className="flex gap-4">
-                          <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                            <img
-                              src={post.thumbnail}
-                              alt={post.title}
-                              className="w-full h-full object-cover"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <h4 className="font-medium text-sm mb-1 hover:text-accent transition-colors">
-                              <Link href={`/blog/${post.id}`}>
-                                {post.title}
-                              </Link>
-                            </h4>
-                            <p className="text-muted-foreground text-xs">
-                              {post.date}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
+
 
                 {/* カテゴリー */}
                 <Card className="bg-card/50 backdrop-blur-sm border-border/50">
@@ -320,11 +321,10 @@ const Blog = () => {
                         <button
                           key={category.id}
                           onClick={() => setSelectedCategory(category.id)}
-                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${
-                            selectedCategory === category.id
-                              ? "bg-accent text-accent-foreground"
-                              : "text-muted-foreground hover:bg-muted"
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg transition-colors ${selectedCategory === category.id
+                            ? "bg-accent text-accent-foreground"
+                            : "text-muted-foreground hover:bg-muted"
+                            }`}
                         >
                           <div className="flex justify-between items-center">
                             <span>{category.name}</span>
