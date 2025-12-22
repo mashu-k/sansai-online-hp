@@ -34,7 +34,7 @@ const Footer = () => {
             </p>
             <div className="flex space-x-4">
               <a
-                href="https://youtube.com/@sansaionline"
+                href="https://youtube.com/@sansai_online"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-accent transition-colors"
@@ -42,7 +42,7 @@ const Footer = () => {
                 <Youtube className="h-5 w-5" />
               </a>
               <a
-                href="https://instagram.com/sansaionline"
+                href="https://instagram.com/sansai_online"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-accent transition-colors"
