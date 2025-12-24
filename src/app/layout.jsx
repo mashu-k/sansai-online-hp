@@ -4,6 +4,7 @@ import "../app/globals.css";
 import Navigation from "@/components/Navigation";
 import Footer from "@/components/Footer";
 import ThemeProvider from "@/components/ThemeProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata = {
   title: "SANSAI ONLINE",
@@ -33,11 +34,13 @@ export default function RootLayout({ children }) {
         />
       </head>
       <body>
-        <ThemeProvider>
-          <Navigation />
-          {children}
-          <Footer />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider>
+            <Navigation />
+            {children}
+            <Footer />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );
