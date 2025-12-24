@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useRouter } from "next/navigation";
@@ -19,10 +19,13 @@ const Login = () => {
     }
   };
 
-  if (user) {
-    router.push("/admin");
-    return null;
-  }
+  useEffect(() => {
+    if (user) {
+      router.push("/admin");
+    }
+  }, [user, router]);
+
+  if (user) return null;
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">

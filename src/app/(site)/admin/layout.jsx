@@ -42,12 +42,6 @@ export default function AdminLayout({ children }) {
             <p className="text-muted-foreground mb-4">
               ログイン中のアカウント ({user.email}) は管理者として登録されていません。
             </p>
-            <div className="text-sm bg-muted p-3 rounded text-left overflow-auto">
-              <p className="font-semibold mb-1">開発者の方へ:</p>
-              <p>
-                <code>src/app/(site)/admin/layout.jsx</code> の <code>ADMIN_EMAILS</code> 配列にこのメールアドレスを追加してください。
-              </p>
-            </div>
           </CardContent>
         </Card>
       </div>

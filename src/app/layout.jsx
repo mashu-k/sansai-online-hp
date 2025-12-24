@@ -33,7 +33,7 @@ export default function RootLayout({ children }) {
           }}
         />
       </head>
-      <body>
+      <body suppressHydrationWarning>
         <AuthProvider>
           <ThemeProvider>
             <Navigation />
