@@ -3,6 +3,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Card, CardContent } from "../ui/card";
 import { Mountain, Users, Camera, Target, Heart, Compass } from "lucide-react";
+import Link from "next/link";
 
 const About = () => {
   const teamMembers = [
@@ -11,18 +12,21 @@ const About = () => {
       nameEng: "Mashu Kawasaki",
       description: "明治大学出身",
       image: "/img/member/mashu.jpg",
+      link: "/mashu",
     },
     {
       name: "橋本哲",
       nameEng: "Tetsu Hashimoto",
       description: "東京農大出身",
       image: "/img/member/tetsu.jpg",
+      link: "/tetsu",
     },
     {
       name: "河内皓亮",
       nameEng: "Kosuke Kawachi",
       description: "信州大学出身",
       image: "/img/member/kosuke.jpg",
+      link: "/kosuke",
     },
   ];
 
@@ -142,24 +146,26 @@ const About = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: index * 0.2 }}
               >
-                <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-24 h-24 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
-                      <img
-                        src={member.image}
-                        alt={member.name}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-xl font-medium mb-2 text-card-foreground">
-                      {member.name}
-                    </h3>
-                    <p className="text-accent mb-2">{member.nameEng}</p>
-                    <p className="text-muted-foreground text-sm leading-relaxed">
-                      {member.description}
-                    </p>
-                  </CardContent>
-                </Card>
+                <Link href={member.link}>
+                  <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 h-full cursor-pointer">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-24 h-24 bg-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center overflow-hidden">
+                        <img
+                          src={member.image}
+                          alt={member.name}
+                          className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                        />
+                      </div>
+                      <h3 className="text-xl font-medium mb-2 text-card-foreground">
+                        {member.name}
+                      </h3>
+                      <p className="text-accent mb-2">{member.nameEng}</p>
+                      <p className="text-muted-foreground text-sm leading-relaxed">
+                        {member.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </Link>
               </motion.div>
             ))}
           </div>
