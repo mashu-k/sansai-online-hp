@@ -149,7 +149,7 @@ const BlogPost = () => {
         <div className="text-center">
           <h1 className="text-2xl font-bold mb-4">記事が見つかりません</h1>
           <Link href="/blog">
-            <Button>ブログ一覧に戻る</Button>
+            <Button variant="outline">ブログ一覧に戻る</Button>
           </Link>
         </div>
       </div>
@@ -177,7 +177,7 @@ const BlogPost = () => {
               <Button
                 variant="outline"
                 size="sm"
-                className="text-white border-white hover:bg-white hover:text-black"
+                className="bg-transparent text-white border-white hover:bg-white hover:text-black"
               >
                 <ArrowLeft className="mr-2 h-4 w-4" />
                 ブログ一覧に戻る
