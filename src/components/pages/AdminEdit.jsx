@@ -734,6 +734,7 @@ const AdminEdit = ({ isNewPost = false }) => {
                         <option value="フリークライミング">
                           フリークライミング
                         </option>
+                        <option value="ギアレビュー">ギアレビュー</option>
                         <option value="その他">その他</option>
                       </select>
                     </div>

@@ -118,6 +118,12 @@ const Footer = () => {
                 フリークライミング
               </a>
               <a
+                href="/blog?category=ギアレビュー"
+                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
+              >
+                ギアレビュー
+              </a>
+              <a
                 href="/blog?category=その他"
                 className="block text-muted-foreground hover:text-accent transition-colors text-sm"
               >
