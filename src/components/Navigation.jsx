@@ -38,6 +38,7 @@ const Navigation = () => {
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Blog", path: "/blog" },
+    { name: "Shiyko T-Shirt", path: "/shop/shiyko-tshirt" },
     { name: "Photo Gallery", path: "/gallery" },
     { name: "About Us", path: "/about" },
     { name: "Contact", path: "/contact" },
