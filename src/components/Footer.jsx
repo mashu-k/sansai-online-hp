@@ -1,16 +1,11 @@
 "use client";
 import React from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { LOGO_IMAGES } from "../data/images.js";
 import {
-  Mountain,
   Mail,
-  MapPin,
-  Phone,
   Youtube,
   Instagram,
-  Twitter,
 } from "lucide-react";
 
 const Footer = () => {

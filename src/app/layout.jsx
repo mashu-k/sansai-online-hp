@@ -7,22 +7,27 @@ import ThemeProvider from "@/components/ThemeProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 
 export const metadata = {
-  title: "SANSAI ONLINE",
-  description: "山菜採りオンライン",
+  title: {
+    default: "SANSAI ONLINE | アルパインクライミングチーム 山菜採りオンライン",
+    template: "%s | SANSAI ONLINE",
+  },
+  description:
+    "アルパインクライミングチーム『山菜採りオンライン』公式サイト。登山・クライミングの記録、メンバー紹介、ギアレビューなど。",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="ja" suppressHydrationWarning>
-      <head>
-        {/* Google Analytics */}
+      <head />
+      <body suppressHydrationWarning>
+        {/* Google Analytics - lazyOnloadでパフォーマンス向上 */}
         <Script
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           src="https://www.googletagmanager.com/gtag/js?id=G-TD5DFH0H0Q"
         />
         <Script
           id="google-analytics"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
           dangerouslySetInnerHTML={{
             __html: `
               window.dataLayer = window.dataLayer || [];
@@ -32,8 +37,6 @@ export default function RootLayout({ children }) {
             `,
           }}
         />
-      </head>
-      <body suppressHydrationWarning>
         <AuthProvider>
           <ThemeProvider>
             <Navigation />
