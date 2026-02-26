@@ -10,8 +10,22 @@ const Home = () => {
   const [showContent, setShowContent] = useState(false);
 
   useEffect(() => {
-    // ヒーロー表示後にbelow-foldコンテンツを読み込み開始
-    setShowContent(true);
+    // TBT最適化: スクロールまたはアイドル時にbelow-foldコンテンツを読み込み
+    const load = () => setShowContent(true);
+    const onScroll = () => {
+      load();
+      cleanup();
+    };
+    const timer = setTimeout(() => {
+      load();
+      cleanup();
+    }, 4000);
+    window.addEventListener("scroll", onScroll, { once: true, passive: true });
+    const cleanup = () => {
+      clearTimeout(timer);
+      window.removeEventListener("scroll", onScroll);
+    };
+    return cleanup;
   }, []);
 
   return (

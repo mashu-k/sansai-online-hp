@@ -10,6 +10,15 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    optimizePackageImports: [
+      'lucide-react',
+      'framer-motion',
+      'date-fns',
+      'recharts',
+      'react-markdown',
+    ],
+  },
 };
 
 export default nextConfig;

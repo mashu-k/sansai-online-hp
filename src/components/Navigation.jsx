@@ -3,7 +3,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { Button } from "./ui/button";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useTheme } from "next-themes";
 import { LOGO_IMAGES } from "../data/images.js";
@@ -84,11 +83,9 @@ const Navigation = () => {
 
           {/* モバイルメニューボタン */}
           <div className="md:hidden">
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={() => setIsOpen(!isOpen)}
-              className="text-foreground"
+              className="inline-flex items-center justify-center h-8 rounded-md px-2.5 text-sm font-medium transition-all text-foreground hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
               aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
             >
               {isOpen ? (
@@ -96,7 +93,7 @@ const Navigation = () => {
               ) : (
                 <Menu className="h-6 w-6" />
               )}
-            </Button>
+            </button>
           </div>
         </div>
 

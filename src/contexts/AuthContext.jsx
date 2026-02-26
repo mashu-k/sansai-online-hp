@@ -11,8 +11,7 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let unsubscribe;
-    // Firebase Auth を動的インポート（初期バンドルから除外）
-    (async () => {
+    const initAuth = async () => {
       const { app } = await import("@/lib/firebase-config");
       const { getAuth, onAuthStateChanged } = await import("firebase/auth");
       const auth = getAuth(app);
@@ -20,8 +19,19 @@ export const AuthProvider = ({ children }) => {
         setUser(user);
         setLoading(false);
       });
-    })();
-    return () => unsubscribe?.();
+    };
+    // TBT最適化: ブラウザがアイドルになってからAuth初期化
+    let cancelId;
+    if ("requestIdleCallback" in window) {
+      cancelId = requestIdleCallback(() => initAuth(), { timeout: 3000 });
+    } else {
+      cancelId = setTimeout(() => initAuth(), 100);
+    }
+    return () => {
+      if ("cancelIdleCallback" in window) cancelIdleCallback(cancelId);
+      else clearTimeout(cancelId);
+      unsubscribe?.();
+    };
   }, []);
 
   const signInWithGoogle = async () => {

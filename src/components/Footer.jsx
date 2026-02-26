@@ -1,4 +1,3 @@
-"use client";
 import React from "react";
 import Link from "next/link";
 import { LOGO_IMAGES } from "../data/images.js";
@@ -8,9 +7,9 @@ import {
   Instagram,
 } from "lucide-react";
 
-const Footer = () => {
-  const currentYear = new Date().getFullYear();
+const currentYear = new Date().getFullYear();
 
+const Footer = () => {
   return (
     <footer className="bg-gray-900/95 backdrop-blur-sm border-t border-border/50 text-white">
       <div className="max-w-6xl mx-auto px-4 py-12">
