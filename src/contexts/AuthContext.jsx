@@ -1,7 +1,5 @@
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
-import { auth, googleProvider, signInWithPopup } from "@/lib/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
 
 const AuthContext = createContext();
 
@@ -12,24 +10,39 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return unsubscribe;
+    let unsubscribe;
+    // Firebase Auth を動的インポート（初期バンドルから除外）
+    (async () => {
+      const { app } = await import("@/lib/firebase-config");
+      const { getAuth, onAuthStateChanged } = await import("firebase/auth");
+      const auth = getAuth(app);
+      unsubscribe = onAuthStateChanged(auth, (user) => {
+        setUser(user);
+        setLoading(false);
+      });
+    })();
+    return () => unsubscribe?.();
   }, []);
 
   const signInWithGoogle = async () => {
     try {
-      await signInWithPopup(auth, googleProvider);
+      const { app } = await import("@/lib/firebase-config");
+      const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
+      const auth = getAuth(app);
+      const provider = new GoogleAuthProvider();
+      await signInWithPopup(auth, provider);
     } catch (error) {
       console.error("Login failed:", error);
       throw error;
     }
   };
 
-  const logout = () => signOut(auth);
+  const logout = async () => {
+    const { app } = await import("@/lib/firebase-config");
+    const { getAuth, signOut } = await import("firebase/auth");
+    const auth = getAuth(app);
+    await signOut(auth);
+  };
 
   const value = {
     user,

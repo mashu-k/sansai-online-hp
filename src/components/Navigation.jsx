@@ -58,6 +58,8 @@ const Navigation = () => {
             <img
               src={getLogoSource()}
               alt="SANSAI ONLINE"
+              width={64}
+              height={64}
               className="h-16 w-auto transition-opacity duration-300"
             />
           </Link>
@@ -87,6 +89,7 @@ const Navigation = () => {
               size="sm"
               onClick={() => setIsOpen(!isOpen)}
               className="text-foreground"
+              aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
             >
               {isOpen ? (
                 <X className="h-6 w-6" />

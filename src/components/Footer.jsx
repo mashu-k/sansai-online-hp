@@ -21,7 +21,10 @@ const Footer = () => {
               <img
                 src={LOGO_IMAGES.longWhite}
                 alt="SANSAI ONLINE"
+                width={200}
+                height={64}
                 className="h-16 w-auto"
+                loading="lazy"
               />
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
@@ -33,6 +36,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-accent transition-colors"
+                aria-label="YouTube"
               >
                 <Youtube className="h-5 w-5" />
               </a>
@@ -41,6 +45,7 @@ const Footer = () => {
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-accent transition-colors"
+                aria-label="Instagram"
               >
                 <Instagram className="h-5 w-5" />
               </a>

@@ -6,15 +6,10 @@ import { Card, CardContent } from "../ui/card";
 import { Youtube, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  getDocs,
-  query,
-  where,
-  orderBy,
-  limit,
-} from "firebase/firestore";
+import { app } from "@/lib/firebase-config";
+import { getFirestore, collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+
+const db = getFirestore(app);
 
 // ギャラリー画像（最適化済みサムネイル）
 const galleryImages = [
@@ -195,7 +190,7 @@ const HomeContent = () => {
                       <p className="text-muted-foreground text-sm line-clamp-2 mb-4 flex-grow">
                         {adventure.excerpt || adventure.description}
                       </p>
-                      <Link href={`/blog/${adventure.id}`}>
+                      <Link href={`/blog/${adventure.id}`} aria-label={`${adventure.title}の詳細を見る`}>
                         <Button variant="outline" size="sm" className="w-full">
                           詳細を見る
                         </Button>
