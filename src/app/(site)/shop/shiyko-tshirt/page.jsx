@@ -1,5 +1,8 @@
+import React from "react";
 import ShopShiyko from "@/components/pages/ShopShiyko";
 
-export default function ShopShiykoPage() {
+const ShiykoTshirtPage = () => {
   return <ShopShiyko />;
-}
+};
+
+export default ShiykoTshirtPage;

@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "Bash(pip3 --version 2>/dev/null || pip --version 2>/dev/null)",
+      "Bash(pip3 install google-analytics-mcp)",
+      "Bash(which pipx 2>/dev/null && pipx --version || echo \"pipx not found\")",
+      "Bash(brew install pipx)",
+      "Bash(pip3 install --user google-analytics-mcp 2>&1)",
+      "Bash(python3 -m venv ~/.local/share/ga4-mcp-venv && ~/.local/share/ga4-mcp-venv/bin/pip install google-analytics-mcp 2>&1)",
+      "Bash(ls ~/.local/share/ga4-mcp-venv/bin/ 2>/dev/null; echo \"---\"; ~/.local/share/ga4-mcp-venv/bin/pip list 2>/dev/null | grep -i google)",
+      "Bash(ls ~/.config/google-analytics-mcp/ 2>/dev/null; echo \"===\"; find ~ -maxdepth 3 -name \"*ga4*\" -o -name \"*analytics*credentials*\" -o -name \"*service_account*\" 2>/dev/null | head -10; echo \"===\"; ls ~/Downloads/*service* 2>/dev/null; ls ~/Downloads/*credentials* 2>/dev/null; ls ~/Downloads/*ga4* 2>/dev/null)",
+      "Bash(~/.local/share/ga4-mcp-venv/bin/ga4-mcp-server --help 2>&1 | head -30)",
+      "Bash(claude --version 2>/dev/null || echo \"claude cli version check failed\")",
+      "Bash(/Users/mashu/.local/share/ga4-mcp-venv/bin/python3 -c \"import ga4_mcp_server; print\\('Module found:', ga4_mcp_server.__file__\\)\" 2>&1)"
+    ]
+  }
+}
