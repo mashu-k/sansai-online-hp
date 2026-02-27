@@ -1,5 +1,5 @@
 import { BetaAnalyticsDataClient } from "@google-analytics/data";
-import { adminDb } from "@/lib/firebase-admin";
+import { getAdminDb } from "@/lib/firebase-admin";
 
 const propertyId = process.env.GA4_PROPERTY_ID;
 
@@ -15,7 +15,7 @@ function getAnalyticsClient() {
 // Firestoreからアナリティクスデータを取得（Admin SDK経由）
 export async function GET() {
   try {
-    const snapshot = await adminDb.collection("analytics").get();
+    const snapshot = await getAdminDb().collection("analytics").get();
     const data = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
     return Response.json({ data });
   } catch (error) {
@@ -30,7 +30,7 @@ export async function POST() {
     const client = getAnalyticsClient();
 
     // 1. Firestoreから公開済み記事を取得
-    const postsSnapshot = await adminDb
+    const postsSnapshot = await getAdminDb()
       .collection("posts")
       .where("status", "==", "published")
       .get();
@@ -161,7 +161,7 @@ export async function POST() {
     });
 
     // 6. Firestoreに書き込み
-    const batch = adminDb.batch();
+    const batch = getAdminDb().batch();
     const now = new Date().toISOString();
 
     Object.entries(postMap).forEach(([postId, data]) => {
@@ -174,7 +174,7 @@ export async function POST() {
         )[0]?.[0] || "N/A";
 
       // posts ドキュメントに analytics サマリーを更新
-      const postRef = adminDb.collection("posts").doc(postId);
+      const postRef = getAdminDb().collection("posts").doc(postId);
       batch.update(postRef, {
         analytics: {
           totalUsers: summary.totalUsers,
@@ -187,7 +187,7 @@ export async function POST() {
       });
 
       // analytics コレクションに詳細データを保存
-      const analyticsRef = adminDb.collection("analytics").doc(postId);
+      const analyticsRef = getAdminDb().collection("analytics").doc(postId);
       batch.set(
         analyticsRef,
         { ...data, lastUpdated: now },
