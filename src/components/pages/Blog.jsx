@@ -5,7 +5,8 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Calendar, ArrowRight, Search } from "lucide-react";
+import { Calendar, ArrowRight, Search, Flame } from "lucide-react";
+import { Badge } from "../ui/badge";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
 
@@ -17,6 +18,7 @@ import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
 const Blog = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [sortMode, setSortMode] = useState("newest");
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
@@ -103,19 +105,26 @@ const Blog = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 10;
 
-  // 検索やカテゴリー変更時にページを1に戻す
+  // 検索やカテゴリー、ソート変更時にページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, sortMode]);
 
-  const filteredPosts = displayPosts.filter((post) => {
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory =
-      selectedCategory === "all" || post.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredPosts = displayPosts
+    .filter((post) => {
+      const matchesSearch =
+        post.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory =
+        selectedCategory === "all" || post.category === selectedCategory;
+      return matchesSearch && matchesCategory;
+    })
+    .sort((a, b) => {
+      if (sortMode === "popular") {
+        return (b.analytics?.totalUsers || 0) - (a.analytics?.totalUsers || 0);
+      }
+      return 0; // createdAt descは既にFirestoreクエリで適用済み
+    });
 
   // ページネーション用の計算
   const indexOfLastPost = currentPage * postsPerPage;
@@ -204,6 +213,12 @@ const Blog = () => {
                             <Calendar className="h-4 w-4 mr-1" />
                             {post.date}
                           </div>
+                          {post.analytics?.totalUsers > 10 && (
+                            <Badge className="bg-orange-500/20 text-orange-500 border-orange-500/30">
+                              <Flame className="w-3 h-3 mr-1" />
+                              人気
+                            </Badge>
+                          )}
                         </div>
 
                         <h2 className="text-xl font-medium mb-4 text-card-foreground hover:text-accent transition-colors">
@@ -275,6 +290,32 @@ const Blog = () => {
             {/* サイドバー */}
             <div className="lg:w-1/3">
               <div className="space-y-8 sticky top-24">
+                {/* 並び替え */}
+                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+                  <CardContent className="p-6">
+                    <h3 className="text-xl font-medium mb-4">並び替え</h3>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={sortMode === "newest" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSortMode("newest")}
+                        className="flex-1"
+                      >
+                        新着順
+                      </Button>
+                      <Button
+                        variant={sortMode === "popular" ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setSortMode("popular")}
+                        className="flex-1"
+                      >
+                        <Flame className="w-4 h-4 mr-1" />
+                        人気順
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+
                 {/* 検索ボックス */}
                 <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                   <CardContent className="p-6">

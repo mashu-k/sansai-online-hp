@@ -1,6 +1,12 @@
 import React from "react";
 import MemberProfile from "@/components/pages/MemberProfile";
 
+export const metadata = {
+  title: "川嵜 摩周 (Mashu Kawasaki) - メンバー紹介",
+  description:
+    "山菜採りオンライン メンバー 川嵜摩周。明治大学山岳部出身。パキスタン Rahman Zom西壁初登攀、MILLETアンバサダー。",
+};
+
 const MashuPage = () => {
   const memberData = {
     name: "川嵜 摩周",

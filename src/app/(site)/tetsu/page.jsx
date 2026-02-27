@@ -1,6 +1,12 @@
 import React from "react";
 import MemberProfile from "@/components/pages/MemberProfile";
 
+export const metadata = {
+  title: "橋本 哲 (Tetsu Hashimoto) - メンバー紹介",
+  description:
+    "山菜採りオンライン メンバー 橋本哲。東京農業大学出身。El Capitan The Nose登攀、パキスタン Rahman Zom西壁初登攀。",
+};
+
 const TetsuPage = () => {
   const memberData = {
     name: "橋本 哲",

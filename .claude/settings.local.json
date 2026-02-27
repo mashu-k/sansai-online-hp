@@ -13,7 +13,32 @@
       "Bash(ls ~/.config/google-analytics-mcp/ 2>/dev/null; echo \"===\"; find ~ -maxdepth 3 -name \"*ga4*\" -o -name \"*analytics*credentials*\" -o -name \"*service_account*\" 2>/dev/null | head -10; echo \"===\"; ls ~/Downloads/*service* 2>/dev/null; ls ~/Downloads/*credentials* 2>/dev/null; ls ~/Downloads/*ga4* 2>/dev/null)",
       "Bash(~/.local/share/ga4-mcp-venv/bin/ga4-mcp-server --help 2>&1 | head -30)",
       "Bash(claude --version 2>/dev/null || echo \"claude cli version check failed\")",
-      "Bash(/Users/mashu/.local/share/ga4-mcp-venv/bin/python3 -c \"import ga4_mcp_server; print\\('Module found:', ga4_mcp_server.__file__\\)\" 2>&1)"
+      "Bash(/Users/mashu/.local/share/ga4-mcp-venv/bin/python3 -c \"import ga4_mcp_server; print\\('Module found:', ga4_mcp_server.__file__\\)\" 2>&1)",
+      "mcp__ga4-analytics__get_ga4_data",
+      "WebFetch(domain:www.googleapis.com)",
+      "Bash(pnpm build 2>&1 | tail -40)",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --version 2>&1)",
+      "Bash(grep -oP 'rel=\"preload\"[^>]*' /tmp/sansai-home.html 2>/dev/null || grep -o 'rel=\"preload\"[^>]*' /tmp/sansai-home.html | head -10)",
+      "Bash(git add src/lib/firebase-config.js src/lib/firebase.js src/contexts/AuthContext.jsx src/components/pages/HomeContent.jsx src/components/Navigation.jsx src/components/Footer.jsx)",
+      "Bash(git commit -m \"$\\(cat <<'EOF'\nパフォーマンス最適化第2弾: TBT・アクセシビリティ改善\n\n- Firebase SDKを動的インポートに変更（AuthContext）\n  - firebase/authが初期バンドルから除外（loginページ: 291KB→148KB）\n  - firebase-config.jsで最小限のapp初期化のみ\n  - firebase.jsからauth関連を分離\n- HomeContentのFirestoreインポートを直接化\n- Navigation: ロゴにwidth/height追加、モバイルメニューボタンにaria-label\n- Footer: ロゴにwidth/height/lazy追加、SNSリンクにaria-label\n- ブログ「詳細を見る」リンクに固有のaria-label追加\n\nCo-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push origin main 2>&1)",
+      "Bash(sleep 90 && gh api repos/mashu-k/sansai-online-hp/deployments --jq '.[0] | \"\\\\\\(.created_at\\) \\\\\\(.id\\)\"' 2>&1)",
+      "Bash(gh api repos/mashu-k/sansai-online-hp/deployments/3933506496/statuses --jq '.[0].state' 2>&1)",
+      "Bash(pnpm build 2>&1 | tail -50)",
+      "Bash(grep -l \"framer-motion\\\\|@radix-ui\\\\|lucide\\\\|next-themes\\\\|firebase\\\\|react-dom\" /Users/mashu/local_test/sansai-online-website/.next/static/chunks/*.js 2>/dev/null | head -20)",
+      "Bash(find /Users/mashu/local_test/sansai-online-website/.next -name \"*.json\" -type f 2>/dev/null | head -20)",
+      "Bash(pnpm build 2>&1 | tail -35)",
+      "Bash(pnpm build 2>&1 | tail -30)",
+      "Bash(wc -c /Users/mashu/local_test/sansai-online-website/.next/static/chunks/611-*.js && head -c 2000 /Users/mashu/local_test/sansai-online-website/.next/static/chunks/611-*.js)",
+      "Bash(cat /Users/mashu/local_test/sansai-online-website/.next/app-build-manifest.json | python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d['pages']['/'], indent=2\\)\\)\")",
+      "mcp__gsc__search_analytics",
+      "WebFetch(domain:sansai-online.com)",
+      "WebFetch(domain:firebase.google.com)",
+      "WebFetch(domain:firebase.blog)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(k\\) for k in d.get\\(''''mcpServers'''',{}\\)]\")",
+      "Bash(cat ~/.claude.json 2>/dev/null | python3 -c \"\nimport json, sys\nd = json.load\\(sys.stdin\\)\nfb = d.get\\('mcpServers',{}\\).get\\('firebase',{}\\)\nprint\\(json.dumps\\(fb, indent=2\\)\\)\n\")",
+      "mcp__firebase__firestore_list_collections",
+      "mcp__firebase__firestore_list_documents"
     ]
   }
 }

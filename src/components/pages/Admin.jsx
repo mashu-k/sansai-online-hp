@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { Plus, Edit, Trash2, Eye, Calendar, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Calendar, Clock, BarChart3 } from "lucide-react";
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -93,12 +93,20 @@ const Admin = () => {
                 記事の作成、編集、削除を行えます
               </p>
             </div>
-            <Link href="/admin/new">
-              <Button size="lg">
-                <Plus className="w-5 h-5 mr-2" />
-                新規記事作成
-              </Button>
-            </Link>
+            <div className="flex gap-3">
+              <Link href="/admin/analytics">
+                <Button variant="outline" size="lg">
+                  <BarChart3 className="w-5 h-5 mr-2" />
+                  アクセス解析
+                </Button>
+              </Link>
+              <Link href="/admin/new">
+                <Button size="lg">
+                  <Plus className="w-5 h-5 mr-2" />
+                  新規記事作成
+                </Button>
+              </Link>
+            </div>
           </div>
 
           {/* フィルター */}
