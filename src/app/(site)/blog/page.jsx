@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import Blog from "@/components/pages/Blog";
 
 export const metadata = {
@@ -8,5 +8,9 @@ export const metadata = {
 };
 
 export default function BlogPage() {
-  return <Blog />;
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-background text-foreground pt-20 flex items-center justify-center"><p className="text-muted-foreground">読み込み中...</p></div>}>
+      <Blog />
+    </Suspense>
+  );
 }

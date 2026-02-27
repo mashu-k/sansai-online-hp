@@ -1,11 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { Card, CardContent } from "../ui/card";
 import { Button } from "../ui/button";
-import { Calendar, ArrowRight, Search, Flame } from "lucide-react";
+import { Calendar, ArrowRight, Search, Flame, X } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
@@ -16,13 +17,24 @@ import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
 import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
 
 const Blog = () => {
+  const searchParams = useSearchParams();
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [selectedTags, setSelectedTags] = useState([]);
   const [sortMode, setSortMode] = useState("newest");
   const [blogPosts, setBlogPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categories, setCategories] = useState([]);
   const [popularTags, setPopularTags] = useState([]);
+
+  // URLパラメータからタグを読み取る（複数対応: ?tag=a&tag=b）
+  useEffect(() => {
+    const tagParams = searchParams.getAll("tag");
+    if (tagParams.length > 0) {
+      setSelectedTags(tagParams);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     fetchPosts();
@@ -99,6 +111,38 @@ const Blog = () => {
     setPopularTags(sortedTags);
   };
 
+  // selectedTags が変わったらURLを同期（レンダリング外で実行）
+  const isInitialMount = React.useRef(true);
+  useEffect(() => {
+    // 初回マウント時（URLパラメータから読み取った場合）はスキップ
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (selectedTags.length === 0) {
+      router.replace("/blog", { scroll: false });
+    } else {
+      const params = selectedTags.map((t) => `tag=${encodeURIComponent(t)}`).join("&");
+      router.replace(`/blog?${params}`, { scroll: false });
+    }
+  }, [selectedTags]);
+
+  const handleTagSelect = (tagName) => {
+    setSelectedTags((prev) =>
+      prev.includes(tagName)
+        ? prev.filter((t) => t !== tagName)
+        : [...prev, tagName]
+    );
+  };
+
+  const removeTag = (tagName) => {
+    setSelectedTags((prev) => prev.filter((t) => t !== tagName));
+  };
+
+  const clearAllTags = () => {
+    setSelectedTags([]);
+  };
+
   // Firebase から取得した記事がない場合は空配列を使用
   const displayPosts = blogPosts.length > 0 ? blogPosts : [];
 
@@ -108,7 +152,7 @@ const Blog = () => {
   // 検索やカテゴリー、ソート変更時にページを1に戻す
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, selectedCategory, sortMode]);
+  }, [searchTerm, selectedCategory, sortMode, selectedTags]);
 
   const filteredPosts = displayPosts
     .filter((post) => {
@@ -117,7 +161,10 @@ const Blog = () => {
         post.excerpt.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory =
         selectedCategory === "all" || post.category === selectedCategory;
-      return matchesSearch && matchesCategory;
+      const matchesTags =
+        selectedTags.length === 0 ||
+        selectedTags.every((tag) => post.tags && post.tags.includes(tag));
+      return matchesSearch && matchesCategory && matchesTags;
     })
     .sort((a, b) => {
       if (sortMode === "popular") {
@@ -186,6 +233,34 @@ const Blog = () => {
           <div className="flex flex-col lg:flex-row gap-8">
             {/* メインコンテンツエリア */}
             <div className="lg:w-2/3">
+              {/* 選択中タグの表示 */}
+              {selectedTags.length > 0 && (
+                <div className="mb-6 flex flex-wrap items-center gap-2">
+                  <span className="text-sm text-muted-foreground">タグで絞り込み中:</span>
+                  {selectedTags.map((tag) => (
+                    <Badge key={tag} className="bg-accent text-accent-foreground px-3 py-1 text-sm">
+                      #{tag}
+                      <button
+                        onClick={() => removeTag(tag)}
+                        className="ml-2 hover:opacity-70"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </Badge>
+                  ))}
+                  <span className="text-sm text-muted-foreground">
+                    ({filteredPosts.length}件)
+                  </span>
+                  {selectedTags.length > 1 && (
+                    <button
+                      onClick={clearAllTags}
+                      className="text-xs text-muted-foreground hover:text-accent transition-colors underline"
+                    >
+                      すべて解除
+                    </button>
+                  )}
+                </div>
+              )}
               <div className="grid md:grid-cols-2 gap-8">
                 {currentPosts.map((post, index) => (
                   <motion.div
@@ -231,12 +306,20 @@ const Blog = () => {
 
                         <div className="flex flex-wrap gap-2 mb-6">
                           {post.tags.map((tag, index) => (
-                            <span
+                            <button
                               key={index}
-                              className="bg-muted text-muted-foreground px-2 py-1 rounded text-xs"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                handleTagSelect(tag);
+                              }}
+                              className={`px-2 py-1 rounded text-xs transition-colors ${
+                                selectedTags.includes(tag)
+                                  ? "bg-accent text-accent-foreground"
+                                  : "bg-muted text-muted-foreground hover:bg-accent/20 hover:text-accent"
+                              }`}
                             >
                               #{tag}
-                            </span>
+                            </button>
                           ))}
                         </div>
 
@@ -365,15 +448,20 @@ const Blog = () => {
                     <h3 className="text-xl font-medium mb-4">人気タグ</h3>
                     <div className="flex flex-wrap gap-2">
                       {popularTags.map((tag, index) => (
-                        <span
+                        <button
                           key={index}
-                          className="bg-accent/20 hover:bg-accent/30 text-accent px-3 py-1 rounded-full text-sm cursor-pointer transition-colors"
+                          onClick={() => handleTagSelect(tag.name)}
+                          className={`px-3 py-1 rounded-full text-sm transition-colors ${
+                            selectedTags.includes(tag.name)
+                              ? "bg-accent text-accent-foreground"
+                              : "bg-accent/20 hover:bg-accent/30 text-accent"
+                          }`}
                         >
                           {tag.name}
                           <span className="ml-1 text-xs opacity-75">
                             ({tag.count})
                           </span>
-                        </span>
+                        </button>
                       ))}
                     </div>
                   </CardContent>

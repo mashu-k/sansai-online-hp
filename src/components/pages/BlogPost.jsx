@@ -67,54 +67,95 @@ const BlogPost = () => {
   };
 
   const fetchRelatedPosts = async (category, currentPostId, tags = []) => {
+    const maxPosts = 3;
     try {
       const postsRef = collection(db, "posts");
-      let q;
+      let posts = [];
+      const usedIds = new Set([currentPostId]);
 
-      // タグがある場合はタグで検索
+      // 1. タグ一致で検索
       if (tags && tags.length > 0) {
-        q = query(
+        const tagQ = query(
           postsRef,
           where("status", "==", "published"),
           where("tags", "array-contains-any", tags),
-          orderBy("createdAt", "desc") // 作成日順でソート（必要に応じて）
+          orderBy("createdAt", "desc")
         );
-      } else {
-        // タグがない場合はカテゴリーで検索
-        q = query(
+        const tagSnapshot = await getDocs(tagQ);
+        tagSnapshot.docs.forEach((doc) => {
+          if (!usedIds.has(doc.id)) {
+            usedIds.add(doc.id);
+            posts.push({
+              id: doc.id,
+              ...doc.data(),
+              date:
+                doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+                doc.data().date,
+            });
+          }
+        });
+      }
+
+      // 2. 足りなければカテゴリー一致で補完
+      if (posts.length < maxPosts && category) {
+        const catQ = query(
           postsRef,
           where("status", "==", "published"),
           where("category", "==", category),
           orderBy("createdAt", "desc")
         );
+        const catSnapshot = await getDocs(catQ);
+        catSnapshot.docs.forEach((doc) => {
+          if (!usedIds.has(doc.id) && posts.length < maxPosts) {
+            usedIds.add(doc.id);
+            posts.push({
+              id: doc.id,
+              ...doc.data(),
+              date:
+                doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+                doc.data().date,
+            });
+          }
+        });
       }
 
-      const snapshot = await getDocs(q);
-      let posts = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-          date:
-            doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
-            doc.data().date,
-        }))
-        .filter((p) => p.id !== currentPostId);
-
-      // タグ検索の場合、カテゴリー検索の結果も混ぜる（件数が少ない場合）
-      // または、タグ検索でヒットしなかった場合にカテゴリー検索を行うなどの調整が可能
-      // ここではシンプルに、タグ検索で不足する場合のフォールバックは複雑になるため
-      // まずはタグ検索の結果を表示し、0件ならカテゴリー検索を行うロジックにする
-
-      if (posts.length === 0) {
-        // タグでもカテゴリーでもヒットしなかった場合、最新記事を表示
+      // 3. それでも足りなければ最新記事で補完
+      if (posts.length < maxPosts) {
         const recentQ = query(
           postsRef,
           where("status", "==", "published"),
           orderBy("createdAt", "desc"),
-          limit(4) // 自分自身が含まれる可能性があるので多めに取得
+          limit(maxPosts + 1)
         );
         const recentSnapshot = await getDocs(recentQ);
-        posts = recentSnapshot.docs
+        recentSnapshot.docs.forEach((doc) => {
+          if (!usedIds.has(doc.id) && posts.length < maxPosts) {
+            usedIds.add(doc.id);
+            posts.push({
+              id: doc.id,
+              ...doc.data(),
+              date:
+                doc.data().createdAt?.toDate().toLocaleDateString("ja-JP") ||
+                doc.data().date,
+            });
+          }
+        });
+      }
+
+      setRelatedPosts(posts.slice(0, maxPosts));
+    } catch (error) {
+      console.error("関連記事の取得に失敗しました:", error);
+      // エラー時も最新記事を試みる
+      try {
+        const postsRef = collection(db, "posts");
+        const fallbackQ = query(
+          postsRef,
+          where("status", "==", "published"),
+          orderBy("createdAt", "desc"),
+          limit(maxPosts + 1)
+        );
+        const fallbackSnapshot = await getDocs(fallbackQ);
+        const fallbackPosts = fallbackSnapshot.docs
           .map((doc) => ({
             id: doc.id,
             ...doc.data(),
@@ -123,15 +164,10 @@ const BlogPost = () => {
               doc.data().date,
           }))
           .filter((p) => p.id !== currentPostId);
+        setRelatedPosts(fallbackPosts.slice(0, maxPosts));
+      } catch {
+        setRelatedPosts([]);
       }
-
-      setRelatedPosts(posts.slice(0, 3)); // 表示数を3件に変更（デザインに合わせて調整）
-      console.log("関連記事を取得:", posts.length);
-    } catch (error) {
-      console.error("関連記事の取得に失敗しました:", error);
-      console.error("エラーの詳細:", error.message);
-      console.error("エラーコード:", error.code);
-      setRelatedPosts([]);
     }
   };
 
@@ -211,14 +247,15 @@ const BlogPost = () => {
             {/* タグ */}
             <div className="flex flex-wrap gap-2 mt-4">
               {post.tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  variant="outline"
-                  className="text-white border-white/50"
-                >
-                  <Tag className="w-3 h-3 mr-1" />
-                  {tag}
-                </Badge>
+                <Link key={tag} href={`/blog?tag=${encodeURIComponent(tag)}`}>
+                  <Badge
+                    variant="outline"
+                    className="text-white border-white/50 hover:bg-white/20 transition-colors cursor-pointer"
+                  >
+                    <Tag className="w-3 h-3 mr-1" />
+                    {tag}
+                  </Badge>
+                </Link>
               ))}
             </div>
           </div>
