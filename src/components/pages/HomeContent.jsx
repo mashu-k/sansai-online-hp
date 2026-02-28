@@ -38,8 +38,10 @@ const HomeContent = () => {
       { threshold: 0.1 }
     );
 
-    document.querySelectorAll("[id]").forEach((el) => {
-      observer.observe(el);
+    const sectionIds = ["mission", "adventures", "gallery", "contact"];
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
     });
 
     return () => observer.disconnect();
@@ -132,7 +134,7 @@ const HomeContent = () => {
       </section>
 
       {/* 冒険記録セクション */}
-      <section id="adventures" className="py-20 px-4 bg-background">
+      <section id="adventures" className="py-20 px-4 bg-background" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 800px" }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
             className="text-center mb-16"
@@ -159,7 +161,7 @@ const HomeContent = () => {
                   animate={isVisible.adventures ? { opacity: 1, y: 0 } : {}}
                   transition={{ duration: 0.8, delay: index * 0.2 }}
                 >
-                  <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full">
+                  <Card className="card-hover bg-card/50 backdrop-blur-sm border-border/50 overflow-hidden h-full cursor-pointer">
                     <div className="aspect-[4/3] overflow-hidden relative">
                       {adventure.image.startsWith("http") ? (
                         <img
@@ -204,7 +206,7 @@ const HomeContent = () => {
 
           <div className="text-center">
             <Link href="/blog">
-              <Button size="lg" variant="outline">
+              <Button size="lg" variant="outline" className="cursor-pointer">
                 すべての記事を見る
               </Button>
             </Link>
@@ -213,7 +215,7 @@ const HomeContent = () => {
       </section>
 
       {/* ギャラリーセクション */}
-      <section id="gallery" className="py-20 px-4 bg-card/20">
+      <section id="gallery" className="py-20 px-4 bg-card/20" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 600px" }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
             className="text-center mb-16"
@@ -254,7 +256,7 @@ const HomeContent = () => {
       </section>
 
       {/* コンタクトセクション */}
-      <section id="contact" className="py-20 px-4 bg-background">
+      <section id="contact" className="py-20 px-4 bg-background" style={{ contentVisibility: "auto", containIntrinsicSize: "auto 400px" }}>
         <div className="max-w-4xl mx-auto text-center">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -270,15 +272,21 @@ const HomeContent = () => {
             </p>
 
             <div className="flex justify-center space-x-6">
-              <Button
-                size="lg"
-                className="bg-red-600 hover:bg-red-700 text-white px-8 py-4"
+              <a
+                href="https://www.youtube.com/@sansai_online"
+                target="_blank"
+                rel="noopener noreferrer"
               >
-                <Youtube className="mr-2 h-5 w-5" />
-                YouTube チャンネル
-              </Button>
+                <Button
+                  size="lg"
+                  className="bg-red-600 hover:bg-red-700 text-white px-8 py-4 cursor-pointer"
+                >
+                  <Youtube className="mr-2 h-5 w-5" />
+                  YouTube チャンネル
+                </Button>
+              </a>
               <Link href="/contact">
-                <Button variant="outline" size="lg" className="px-8 py-4">
+                <Button variant="outline" size="lg" className="px-8 py-4 cursor-pointer">
                   お問い合わせ
                 </Button>
               </Link>

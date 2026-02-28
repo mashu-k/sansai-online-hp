@@ -1,43 +1,13 @@
 "use client";
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { X, Download, Heart, Share2 } from "lucide-react";
+import { X, Heart, Share2, Download } from "lucide-react";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import { galleryPhotos } from "@/data/gallery";
 
 const Gallery = () => {
   const [selectedImage, setSelectedImage] = useState(null);
-  const [filter, setFilter] = useState("all");
-
-  // public/img/page/gallery 配下の画像を使用
-  // ファイル名: gallery-0.JPG ~ gallery-27.JPG（連番）
-  const ids = Array.from({ length: 28 }, (_, i) => i);
-  const categoryByIndex = (i) => {
-    const list = ["landscape", "autumn", "winter", "volcanic", "flora"];
-    return list[i % list.length];
-  };
-  const photos = ids.map((i) => ({
-    id: i + 1,
-    src: `/img/page/gallery/gallery-${i}.JPG`,
-    title: `GALLERY ${i + 1}`,
-    location: "",
-    category: categoryByIndex(i),
-    description: "",
-  }));
-
-  const categories = [
-    { key: "all", label: "すべて" },
-    { key: "landscape", label: "風景" },
-    { key: "autumn", label: "紅葉" },
-    { key: "winter", label: "雪景色" },
-    { key: "volcanic", label: "火山" },
-    { key: "flora", label: "高山植物" },
-  ];
-
-  const filteredPhotos =
-    filter === "all"
-      ? photos
-      : photos.filter((photo) => photo.category === filter);
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-20">
@@ -56,29 +26,11 @@ const Gallery = () => {
         </div>
       </section>
 
-      {/* フィルターセクション */}
-      {/* <section className="py-8 px-4">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex flex-wrap justify-center gap-4">
-            {categories.map((category) => (
-              <Button
-                key={category.key}
-                variant={filter === category.key ? "default" : "outline"}
-                onClick={() => setFilter(category.key)}
-                className="transition-all duration-300"
-              >
-                {category.label}
-              </Button>
-            ))}
-          </div>
-        </div>
-      </section> */}
-
       {/* ギャラリーグリッド */}
       <section className="py-12 px-4">
         <div className="max-w-6xl mx-auto">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredPhotos.map((photo, index) => (
+            {galleryPhotos.map((photo, index) => (
               <motion.div
                 key={photo.id}
                 className="group relative aspect-square overflow-hidden rounded-lg cursor-pointer"
@@ -90,7 +42,7 @@ const Gallery = () => {
               >
                 <Image
                   src={photo.src}
-                  alt={photo.title}
+                  alt={photo.alt || photo.title || `ギャラリー写真 ${photo.id}`}
                   fill
                   sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
                   className="object-cover transition-transform duration-500 group-hover:scale-110"
@@ -139,7 +91,7 @@ const Gallery = () => {
             >
               <Image
                 src={selectedImage.src}
-                alt={selectedImage.title}
+                alt={selectedImage.alt || selectedImage.title || `ギャラリー写真 ${selectedImage.id}`}
                 fill
                 sizes="90vw"
                 className="object-contain rounded-lg"

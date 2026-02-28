@@ -1,11 +1,20 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { useTheme } from "next-themes";
 import { LOGO_IMAGES } from "../data/images.js";
+
+const navItems = [
+  { name: "Home", path: "/" },
+  { name: "Blog", path: "/blog" },
+  { name: "Photo Gallery", path: "/gallery" },
+  { name: "About Us", path: "/about" },
+  { name: "Contact", path: "/contact" },
+];
 
 const Navigation = () => {
   const { theme } = useTheme();
@@ -30,17 +39,9 @@ const Navigation = () => {
       setScrolled(window.scrollY > 50);
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const navItems = [
-    { name: "Home", path: "/" },
-    { name: "Blog", path: "/blog" },
-{ name: "Photo Gallery", path: "/gallery" },
-    { name: "About Us", path: "/about" },
-    { name: "Contact", path: "/contact" },
-  ];
 
   return (
     <nav
@@ -54,11 +55,11 @@ const Navigation = () => {
         <div className="flex justify-between items-center h-16">
           {/* ロゴ */}
           <Link href="/" className="flex items-center space-x-2">
-            <img
+            <Image
               src={getLogoSource()}
               alt="SANSAI ONLINE"
-              width={64}
-              height={64}
+              width={534}
+              height={223}
               className="h-16 w-auto transition-opacity duration-300"
             />
           </Link>
@@ -84,7 +85,7 @@ const Navigation = () => {
           {/* モバイルメニューボタン */}
           <div className="md:hidden">
             <button
-              onClick={() => setIsOpen(!isOpen)}
+              onClick={() => setIsOpen(prev => !prev)}
               className="inline-flex items-center justify-center h-8 rounded-md px-2.5 text-sm font-medium transition-all text-foreground hover:bg-accent hover:text-accent-foreground outline-none focus-visible:ring-ring/50 focus-visible:ring-[3px]"
               aria-label={isOpen ? "メニューを閉じる" : "メニューを開く"}
             >

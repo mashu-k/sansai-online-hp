@@ -99,6 +99,11 @@
   --ring: #4f46e5;
 }
 
+@theme inline {
+  --font-sans: var(--font-noto-sans-jp), system-ui, sans-serif;
+  --font-serif: var(--font-noto-serif-jp), serif;
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

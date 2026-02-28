@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { LOGO_IMAGES } from "../data/images.js";
 import {
   Mail,
@@ -17,7 +18,7 @@ const Footer = () => {
           {/* ブランド情報 */}
           <div className="space-y-4">
             <div className="flex items-center space-x-2">
-              <img
+              <Image
                 src={LOGO_IMAGES.longWhite}
                 alt="SANSAI ONLINE"
                 width={200}
