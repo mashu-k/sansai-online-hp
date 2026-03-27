@@ -9,6 +9,7 @@ import { Badge } from "./ui/badge";
 import { Search, Calendar, Tag, BookOpen, Clock } from "lucide-react";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, orderBy, limit } from "firebase/firestore";
+import { toSlug } from "@/lib/categories";
 
 const BlogSidebar = ({ currentPostId }) => {
   const [recentPosts, setRecentPosts] = useState([]);
@@ -180,7 +181,7 @@ const BlogSidebar = ({ currentPostId }) => {
             {categories.map((category) => (
               <Link
                 key={category.name}
-                href={`/blog?category=${encodeURIComponent(category.name)}`}
+                href={`/blog?category=${encodeURIComponent(toSlug(category.name))}`}
                 className="flex items-center justify-between p-2 rounded-lg hover:bg-accent/50 transition-colors group"
               >
                 <span className="text-sm group-hover:text-accent-foreground transition-colors">

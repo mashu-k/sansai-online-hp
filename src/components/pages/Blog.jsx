@@ -10,6 +10,7 @@ import { Calendar, ArrowRight, Search, Flame, X } from "lucide-react";
 import { Badge } from "../ui/badge";
 import { db } from "@/lib/firebase";
 import { collection, getDocs, query, where, orderBy } from "firebase/firestore";
+import { toSlug, toJaName } from "@/lib/categories";
 
 // 画像のインポート
 import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
@@ -28,11 +29,16 @@ const Blog = () => {
   const [categories, setCategories] = useState([]);
   const [popularTags, setPopularTags] = useState([]);
 
-  // URLパラメータからタグを読み取る（複数対応: ?tag=a&tag=b）
+  // URLパラメータからタグとカテゴリーを読み取る
   useEffect(() => {
     const tagParams = searchParams.getAll("tag");
     if (tagParams.length > 0) {
       setSelectedTags(tagParams);
+    }
+    const categoryParam = searchParams.get("category");
+    if (categoryParam) {
+      // スラッグを日本語名に変換してstateにセット
+      setSelectedCategory(toJaName(categoryParam));
     }
   }, [searchParams]);
 
@@ -111,21 +117,27 @@ const Blog = () => {
     setPopularTags(sortedTags);
   };
 
-  // selectedTags が変わったらURLを同期（レンダリング外で実行）
+  // selectedTags / selectedCategory が変わったらURLを同期
   const isInitialMount = React.useRef(true);
+  const buildQueryString = () => {
+    const params = [];
+    if (selectedCategory !== "all") {
+      params.push(`category=${encodeURIComponent(toSlug(selectedCategory))}`);
+    }
+    selectedTags.forEach((t) => {
+      params.push(`tag=${encodeURIComponent(t)}`);
+    });
+    return params.length > 0 ? `?${params.join("&")}` : "";
+  };
+
   useEffect(() => {
     // 初回マウント時（URLパラメータから読み取った場合）はスキップ
     if (isInitialMount.current) {
       isInitialMount.current = false;
       return;
     }
-    if (selectedTags.length === 0) {
-      router.replace("/blog", { scroll: false });
-    } else {
-      const params = selectedTags.map((t) => `tag=${encodeURIComponent(t)}`).join("&");
-      router.replace(`/blog?${params}`, { scroll: false });
-    }
-  }, [selectedTags]);
+    router.replace(`/blog${buildQueryString()}`, { scroll: false });
+  }, [selectedTags, selectedCategory]);
 
   const handleTagSelect = (tagName) => {
     setSelectedTags((prev) =>

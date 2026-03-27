@@ -93,42 +93,22 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">カテゴリー</h4>
             <nav className="space-y-2">
-              <a
-                href="/blog?category=海外遠征"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                海外遠征
-              </a>
-              <a
-                href="/blog?category=冬山"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                冬山
-              </a>
-              <a
-                href="/blog?category=スキー"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                スキー
-              </a>
-              <a
-                href="/blog?category=フリークライミング"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                フリークライミング
-              </a>
-              <a
-                href="/blog?category=ギアレビュー"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                ギアレビュー
-              </a>
-              <a
-                href="/blog?category=その他"
-                className="block text-muted-foreground hover:text-accent transition-colors text-sm"
-              >
-                その他
-              </a>
+              {[
+                { slug: "overseas", name: "海外遠征" },
+                { slug: "winter", name: "冬山" },
+                { slug: "ski", name: "スキー" },
+                { slug: "climbing", name: "フリークライミング" },
+                { slug: "gear", name: "ギアレビュー" },
+                { slug: "other", name: "その他" },
+              ].map((cat) => (
+                <a
+                  key={cat.slug}
+                  href={`/blog?category=${cat.slug}`}
+                  className="block text-muted-foreground hover:text-accent transition-colors text-sm"
+                >
+                  {cat.name}
+                </a>
+              ))}
             </nav>
           </div>
 
