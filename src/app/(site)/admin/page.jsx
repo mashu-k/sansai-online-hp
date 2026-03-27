@@ -2,13 +2,23 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { FileText, BarChart3, Users, MessageCircle, ArrowRight } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { FileText, BarChart3, Users, MessageCircle, ArrowRight, Heart } from "lucide-react";
 import { ADMIN_EMAILS } from "@/lib/admin-config";
 import { db } from "@/lib/firebase";
-import { collection, getCountFromServer, query, where } from "firebase/firestore";
+import {
+  collection,
+  getCountFromServer,
+  query,
+  where,
+  getDocs,
+  orderBy,
+} from "firebase/firestore";
 
 export default function AdminDashboard() {
-  const [stats, setStats] = useState({ posts: 0, published: 0, users: 0, comments: 0 });
+  const [stats, setStats] = useState({ posts: 0, published: 0, users: 0 });
+  const [likeRanking, setLikeRanking] = useState([]);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -27,7 +37,34 @@ export default function AdminDashboard() {
         console.error("統計取得エラー:", error);
       }
     };
+
+    const fetchLikeRanking = async () => {
+      try {
+        const postsSnap = await getDocs(
+          query(collection(db, "posts"), where("status", "==", "published"))
+        );
+        const results = await Promise.all(
+          postsSnap.docs.map(async (postDoc) => {
+            const likesSnap = await getCountFromServer(
+              collection(db, "posts", postDoc.id, "likes")
+            );
+            return {
+              id: postDoc.id,
+              title: postDoc.data().title,
+              likes: likesSnap.data().count,
+            };
+          })
+        );
+        const sorted = results.sort((a, b) => b.likes - a.likes);
+        setTotalLikes(sorted.reduce((sum, r) => sum + r.likes, 0));
+        setLikeRanking(sorted.slice(0, 5));
+      } catch (error) {
+        console.error("いいねランキング取得エラー:", error);
+      }
+    };
+
     fetchStats();
+    fetchLikeRanking();
   }, []);
 
   const cards = [
@@ -88,6 +125,47 @@ export default function AdminDashboard() {
             </Link>
           );
         })}
+      </div>
+
+      {/* いいねサマリー */}
+      <div className="mt-8">
+        <Card>
+          <CardContent className="p-5">
+            <div className="flex items-center gap-3 mb-4">
+              <Heart className="h-5 w-5 text-red-500" />
+              <h3 className="font-semibold">いいねランキング</h3>
+              <Badge variant="secondary" className="ml-auto">合計 {totalLikes} いいね</Badge>
+            </div>
+            {likeRanking.length === 0 ? (
+              <p className="text-sm text-muted-foreground">データなし</p>
+            ) : (
+              <div className="space-y-2">
+                {likeRanking.map((item, i) => (
+                  <div
+                    key={item.id}
+                    className="flex items-center justify-between p-2.5 rounded-lg bg-muted/50"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <span className="text-sm font-bold text-muted-foreground w-5 text-center flex-shrink-0">
+                        {i + 1}
+                      </span>
+                      <Link
+                        href={`/blog/${item.id}`}
+                        className="text-sm truncate hover:text-accent transition-colors"
+                      >
+                        {item.title}
+                      </Link>
+                    </div>
+                    <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+                      <Heart className="h-3.5 w-3.5 text-red-500" />
+                      <span className="text-sm font-medium">{item.likes}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

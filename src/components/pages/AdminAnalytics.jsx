@@ -32,6 +32,7 @@ import {
   BarChart3,
   PieChart as PieChartIcon,
   Table as TableIcon,
+  Heart,
 } from "lucide-react";
 
 const CHART_COLORS = [
@@ -66,9 +67,12 @@ const AdminAnalytics = () => {
   const [syncing, setSyncing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState("all");
+  const [likeData, setLikeData] = useState([]);
+  const [totalLikes, setTotalLikes] = useState(0);
 
   useEffect(() => {
     fetchAnalytics();
+    fetchLikes();
   }, []);
 
   const fetchAnalytics = async () => {
@@ -90,6 +94,33 @@ const AdminAnalytics = () => {
       console.error("Analytics fetch error:", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchLikes = async () => {
+    try {
+      const { db } = await import("@/lib/firebase");
+      const { collection, getDocs, getCountFromServer, query, where } = await import("firebase/firestore");
+      const postsSnap = await getDocs(
+        query(collection(db, "posts"), where("status", "==", "published"))
+      );
+      const results = await Promise.all(
+        postsSnap.docs.map(async (postDoc) => {
+          const likesSnap = await getCountFromServer(
+            collection(db, "posts", postDoc.id, "likes")
+          );
+          return {
+            id: postDoc.id,
+            title: postDoc.data().title,
+            likes: likesSnap.data().count,
+          };
+        })
+      );
+      const sorted = results.sort((a, b) => b.likes - a.likes);
+      setLikeData(sorted);
+      setTotalLikes(sorted.reduce((sum, r) => sum + r.likes, 0));
+    } catch (error) {
+      console.error("いいねデータ取得エラー:", error);
     }
   };
 
@@ -274,7 +305,7 @@ const AdminAnalytics = () => {
 
           {/* タブ */}
           <Tabs defaultValue="comparison" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4 bg-card/50 backdrop-blur-sm">
+            <TabsList className="grid w-full grid-cols-5 bg-card/50 backdrop-blur-sm">
               <TabsTrigger value="comparison" className="flex items-center gap-2">
                 <BarChart3 className="w-4 h-4" />
                 <span className="hidden sm:inline">記事別比較</span>
@@ -282,6 +313,10 @@ const AdminAnalytics = () => {
               <TabsTrigger value="channels" className="flex items-center gap-2">
                 <PieChartIcon className="w-4 h-4" />
                 <span className="hidden sm:inline">流入元分析</span>
+              </TabsTrigger>
+              <TabsTrigger value="likes" className="flex items-center gap-2">
+                <Heart className="w-4 h-4" />
+                <span className="hidden sm:inline">いいね数</span>
               </TabsTrigger>
               <TabsTrigger value="trends" className="flex items-center gap-2">
                 <TrendingUp className="w-4 h-4" />
@@ -422,6 +457,83 @@ const AdminAnalytics = () => {
                               </Badge>
                             </div>
                           ))}
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* いいね数 */}
+            <TabsContent value="likes">
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle>記事別いいね数</CardTitle>
+                    <Badge variant="secondary" className="text-base px-3 py-1">
+                      <Heart className="w-4 h-4 mr-1.5 text-red-500" />
+                      合計 {totalLikes}
+                    </Badge>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  {likeData.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-12">
+                      データがありません
+                    </p>
+                  ) : (
+                    <div className="flex flex-col lg:flex-row gap-8">
+                      <div className="h-[400px] w-full lg:w-1/2">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <BarChart
+                            data={likeData.filter((d) => d.likes > 0)}
+                            layout="vertical"
+                            margin={{ left: 20, right: 20 }}
+                          >
+                            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                            <XAxis type="number" tick={{ fontSize: 12 }} allowDecimals={false} />
+                            <YAxis
+                              dataKey="title"
+                              type="category"
+                              width={140}
+                              tick={{ fontSize: 11 }}
+                              tickFormatter={(v) => v.length > 14 ? v.slice(0, 14) + "…" : v}
+                            />
+                            <Tooltip
+                              contentStyle={{
+                                backgroundColor: "hsl(var(--card))",
+                                border: "1px solid hsl(var(--border))",
+                                borderRadius: "8px",
+                              }}
+                              formatter={(value) => [`${value} いいね`, "いいね数"]}
+                            />
+                            <Bar dataKey="likes" fill="hsl(0, 70%, 55%)" radius={[0, 4, 4, 0]} />
+                          </BarChart>
+                        </ResponsiveContainer>
+                      </div>
+                      <div className="w-full lg:w-1/2 space-y-2">
+                        {likeData.map((item, i) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <span className="text-sm font-bold text-muted-foreground w-5 text-center flex-shrink-0">
+                                {i + 1}
+                              </span>
+                              <Link
+                                href={`/blog/${item.id}`}
+                                className="text-sm truncate hover:text-accent transition-colors"
+                              >
+                                {item.title}
+                              </Link>
+                            </div>
+                            <div className="flex items-center gap-1.5 flex-shrink-0 ml-3">
+                              <Heart className="h-3.5 w-3.5 text-red-500" />
+                              <span className="text-sm font-medium">{item.likes}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   )}
