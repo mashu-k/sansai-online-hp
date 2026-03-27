@@ -78,8 +78,15 @@ export const AuthProvider = ({ children }) => {
     const initAuth = async () => {
       try {
         const { app } = await import("@/lib/firebase-config");
-        const { getAuth, onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink } = await import("firebase/auth");
+        const { getAuth, onAuthStateChanged, isSignInWithEmailLink, signInWithEmailLink, getRedirectResult } = await import("firebase/auth");
         const auth = getAuth(app);
+
+        // Googleリダイレクト認証の復帰処理（モバイル）
+        try {
+          await getRedirectResult(auth);
+        } catch (error) {
+          logger.warn("リダイレクト認証エラー:", error.code);
+        }
 
         // メールリンク認証の復帰処理
         if (isSignInWithEmailLink(auth, window.location.href)) {
@@ -135,14 +142,29 @@ export const AuthProvider = ({ children }) => {
     };
   }, [fetchUserProfile, autoCreateAdminProfile]);
 
+  const isMobile = () =>
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+
   const signInWithGoogle = async () => {
     try {
       const { app } = await import("@/lib/firebase-config");
-      const { getAuth, GoogleAuthProvider, signInWithPopup } = await import("firebase/auth");
-      const auth = getAuth(app);
+      const auth = (await import("firebase/auth")).getAuth(app);
+      const { GoogleAuthProvider } = await import("firebase/auth");
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
-      return result.user;
+
+      if (isMobile()) {
+        // モバイル: リダイレクト方式（ポップアップはモバイルブラウザで不安定）
+        const { signInWithRedirect } = await import("firebase/auth");
+        await signInWithRedirect(auth, provider);
+        // リダイレクトするのでここでは return しない
+      } else {
+        // デスクトップ: ポップアップ方式
+        const { signInWithPopup } = await import("firebase/auth");
+        const result = await signInWithPopup(auth, provider);
+        return result.user;
+      }
     } catch (error) {
       logger.error("Googleログインエラー:", error);
       throw error;
