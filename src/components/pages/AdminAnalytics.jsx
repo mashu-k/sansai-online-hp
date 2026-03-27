@@ -400,8 +400,9 @@ const AdminAnalytics = () => {
                       </div>
                       <div className="w-full lg:w-1/2 space-y-3">
                         {getChannelData()
+                          .map((ch, i) => ({ ...ch, colorIndex: i }))
                           .sort((a, b) => b.value - a.value)
-                          .map((ch, i) => (
+                          .map((ch) => (
                             <div
                               key={ch.name}
                               className="flex items-center justify-between p-3 rounded-lg bg-muted/50"
@@ -411,7 +412,7 @@ const AdminAnalytics = () => {
                                   className="w-3 h-3 rounded-full"
                                   style={{
                                     backgroundColor:
-                                      CHART_COLORS[i % CHART_COLORS.length],
+                                      CHART_COLORS[ch.colorIndex % CHART_COLORS.length],
                                   }}
                                 />
                                 <span className="text-sm">{ch.name}</span>

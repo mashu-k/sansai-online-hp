@@ -135,7 +135,7 @@ const AdminEdit = ({ isNewPost = false }) => {
       }
 
       alert("保存に成功しました！");
-      router.push("/admin");
+      router.push("/admin/posts");
     } catch (error) {
       console.error("保存エラー:", error);
       console.error("エラーの詳細:", error.message);
@@ -388,7 +388,7 @@ const AdminEdit = ({ isNewPost = false }) => {
           {/* ヘッダー */}
           <div className="flex justify-between items-center mb-8">
             <div className="flex items-center gap-4">
-              <Link href="/admin">
+              <Link href="/admin/posts">
                 <Button variant="outline" size="sm">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   戻る

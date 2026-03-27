@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import { Plus, Edit, Trash2, Eye, Calendar, Clock, BarChart3 } from "lucide-react";
+import { Plus, Edit, Trash2, Eye, Calendar, Clock } from "lucide-react";
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -78,8 +78,7 @@ const Admin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="p-6 md:p-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -88,25 +87,17 @@ const Admin = () => {
           {/* ヘッダー */}
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold mb-2">ブログ記事管理</h1>
-              <p className="text-muted-foreground">
+              <h1 className="text-2xl font-bold mb-1">ブログ記事管理</h1>
+              <p className="text-muted-foreground text-sm">
                 記事の作成、編集、削除を行えます
               </p>
             </div>
-            <div className="flex gap-3">
-              <Link href="/admin/analytics">
-                <Button variant="outline" size="lg">
-                  <BarChart3 className="w-5 h-5 mr-2" />
-                  アクセス解析
-                </Button>
-              </Link>
-              <Link href="/admin/new">
-                <Button size="lg">
-                  <Plus className="w-5 h-5 mr-2" />
-                  新規記事作成
-                </Button>
-              </Link>
-            </div>
+            <Link href="/admin/posts/new">
+              <Button size="lg">
+                <Plus className="w-5 h-5 mr-2" />
+                新規記事作成
+              </Button>
+            </Link>
           </div>
 
           {/* フィルター */}
@@ -140,7 +131,7 @@ const Admin = () => {
             <Card>
               <CardContent className="text-center py-12">
                 <p className="text-muted-foreground mb-4">記事がありません</p>
-                <Link href="/admin/new">
+                <Link href="/admin/posts/new">
                   <Button>
                     <Plus className="w-4 h-4 mr-2" />
                     最初の記事を作成
@@ -194,7 +185,7 @@ const Admin = () => {
                             </Button>
                           </Link>
                         )}
-                        <Link href={`/admin/edit/${post.id}`}>
+                        <Link href={`/admin/posts/edit/${post.id}`}>
                           <Button variant="outline" size="sm">
                             <Edit className="w-4 h-4" />
                           </Button>
@@ -215,7 +206,6 @@ const Admin = () => {
             </div>
           )}
         </motion.div>
-      </div>
     </div>
   );
 };

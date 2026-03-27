@@ -38,7 +38,8 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); [print\\(k\\) for k in d.get\\(''''mcpServers'''',{}\\)]\")",
       "Bash(cat ~/.claude.json 2>/dev/null | python3 -c \"\nimport json, sys\nd = json.load\\(sys.stdin\\)\nfb = d.get\\('mcpServers',{}\\).get\\('firebase',{}\\)\nprint\\(json.dumps\\(fb, indent=2\\)\\)\n\")",
       "mcp__firebase__firestore_list_collections",
-      "mcp__firebase__firestore_list_documents"
+      "mcp__firebase__firestore_list_documents",
+      "mcp__ga4-analytics__search_schema"
     ]
   }
 }

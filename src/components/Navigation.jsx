@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
+import UserMenu from "@/components/auth/UserMenu";
 import { useTheme } from "next-themes";
 import { LOGO_IMAGES } from "../data/images.js";
 
@@ -80,6 +81,7 @@ const Navigation = () => {
               </Link>
             ))}
             <ThemeToggle />
+            <UserMenu />
           </div>
 
           {/* モバイルメニューボタン */}
@@ -116,8 +118,9 @@ const Navigation = () => {
                   {item.name}
                 </Link>
               ))}
-              <div className="px-3 py-2">
+              <div className="px-3 py-2 flex items-center gap-3">
                 <ThemeToggle />
+                <UserMenu />
               </div>
             </div>
           </div>

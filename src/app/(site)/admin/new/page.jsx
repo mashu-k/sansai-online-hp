@@ -1,7 +1,9 @@
 "use client";
-import React from "react";
-import AdminEdit from "@/components/pages/AdminEdit";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-export default function AdminNewPage() {
-  return <AdminEdit isNewPost={true} />;
+export default function OldNewPage() {
+  const router = useRouter();
+  useEffect(() => { router.replace("/admin/posts/new"); }, [router]);
+  return null;
 }

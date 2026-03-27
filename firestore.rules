@@ -1,0 +1,101 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === 公開プロフィール ===
+    match /users/{uid} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && request.resource.data.keys().hasAll(['nickname', 'avatar', 'createdAt', 'role', 'isBanned'])
+                    && request.resource.data.nickname is string
+                    && request.resource.data.nickname.size() >= 1
+                    && request.resource.data.nickname.size() <= 30
+                    && (request.resource.data.role == 'user' || request.resource.data.role == 'admin')
+                    && request.resource.data.isBanned == false
+                    && !('googleDisplayName' in request.resource.data);
+
+      // 本人がニックネーム・アイコンを変更
+      allow update: if request.auth != null
+                    && request.auth.uid == uid
+                    && !('role' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('isBanned' in request.resource.data.diff(resource.data).affectedKeys())
+                    && !('googleDisplayName' in request.resource.data);
+
+      // 管理者がisBannedを変更
+      allow update: if request.auth != null
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isBanned']);
+
+      // 本人のみアカウント削除可能
+      allow delete: if request.auth != null
+                    && request.auth.uid == uid;
+    }
+
+    // === 非公開プロフィール ===
+    match /users/{uid}/private/{doc} {
+      allow read, write: if request.auth != null
+                         && request.auth.uid == uid;
+    }
+
+    // === いいね ===
+    match /posts/{postId}/likes/{likeUid} {
+      allow read: if true;
+      allow create: if request.auth != null
+                    && request.auth.uid == likeUid
+                    && !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('isBanned', false);
+      allow delete: if request.auth != null
+                    && request.auth.uid == likeUid;
+    }
+
+    // === コメント ===
+    match /posts/{postId}/comments/{commentId} {
+      allow read: if true;
+
+      allow create: if request.auth != null
+                    && request.resource.data.uid == request.auth.uid
+                    && request.resource.data.content is string
+                    && request.resource.data.content.size() >= 1
+                    && request.resource.data.content.size() <= 500
+                    && request.resource.data.isDeleted == false
+                    && !get(/databases/$(database)/documents/users/$(request.auth.uid)).data.get('isBanned', false)
+                    // parentId: null（トップレベル）またはstring（返信）
+                    && (request.resource.data.parentId == null || request.resource.data.parentId is string);
+
+      allow update: if request.auth != null
+                    && (
+                      resource.data.uid == request.auth.uid
+                      || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+                    )
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['isDeleted', 'deletedBy']);
+
+      // コメントいいね
+      match /likes/{likeUid} {
+        allow read: if true;
+        allow create: if request.auth != null && request.auth.uid == likeUid;
+        allow delete: if request.auth != null && request.auth.uid == likeUid;
+      }
+    }
+
+    // === 投稿 ===
+    match /posts/{postId} {
+      allow read: if true;
+      // 管理者は記事の作成・更新・削除が可能
+      allow create, delete: if request.auth != null
+                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      allow update: if request.auth != null
+                    && (
+                      // 管理者は全フィールド更新可能
+                      get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+                      // 一般ユーザーは likeCount, commentCount のみ更新可能
+                      || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount', 'commentCount'])
+                    );
+    }
+
+    // === アナリティクス（既存） ===
+    match /analytics/{docId} {
+      allow read: if true;
+    }
+  }
+}

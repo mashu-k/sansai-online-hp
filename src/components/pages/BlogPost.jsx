@@ -12,6 +12,10 @@ import { db } from "@/lib/firebase";
 import BlogSidebar from "../BlogSidebar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import LikeButton from "../blog/LikeButton";
+import CommentSection from "../blog/CommentSection";
+import LoginModal from "../auth/LoginModal";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   doc,
   getDoc,
@@ -29,6 +33,12 @@ const BlogPost = () => {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
   const [relatedPosts, setRelatedPosts] = useState([]);
+  const [loginOpen, setLoginOpen] = useState(false);
+  const { user, isProfileComplete } = useAuth();
+
+  const handleLoginRequired = () => {
+    setLoginOpen(true);
+  };
 
   useEffect(() => {
     if (id) {
@@ -384,6 +394,25 @@ const BlogPost = () => {
                     {post.content}
                   </ReactMarkdown>
                 </div>
+
+                {/* いいねボタン */}
+                <div className="mt-12 flex justify-center">
+                  <LikeButton
+                    postId={id}
+                    onLoginRequired={handleLoginRequired}
+                  />
+                </div>
+
+                {/* コメントセクション */}
+                <div className="mt-12 border-t border-border/50 pt-8">
+                  <CommentSection
+                    postId={id}
+                    onLoginRequired={handleLoginRequired}
+                  />
+                </div>
+
+                {/* ログイン・プロフィール設定モーダル */}
+                <LoginModal open={loginOpen} onOpenChange={setLoginOpen} />
 
                 {/* 記事下の関連記事 */}
                 <div className="mt-12">

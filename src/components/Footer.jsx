@@ -165,6 +165,14 @@ const Footer = () => {
             <div className="text-muted-foreground text-sm">
               © {currentYear} SANSAI ONLINE. All rights reserved.
             </div>
+            <div className="flex space-x-4 text-muted-foreground text-sm">
+              <Link href="/privacy" className="hover:text-accent transition-colors">
+                プライバシーポリシー
+              </Link>
+              <Link href="/terms" className="hover:text-accent transition-colors">
+                利用規約
+              </Link>
+            </div>
           </div>
         </div>
       </div>
