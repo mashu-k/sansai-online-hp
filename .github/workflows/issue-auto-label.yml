@@ -1,0 +1,55 @@
+name: Auto-label issues
+
+on:
+  issues:
+    types: [opened, edited]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          script: |
+            const body = context.payload.issue.body || '';
+            const labels = [];
+
+            // 優先度
+            const priorityMatch = body.match(/###\s*優先度\s*\n+\s*([^\n]+)/);
+            if (priorityMatch) {
+              const v = priorityMatch[1].toLowerCase();
+              if (v.startsWith('critical')) labels.push('priority:critical');
+              else if (v.startsWith('high')) labels.push('priority:high');
+              else if (v.startsWith('medium')) labels.push('priority:medium');
+              else if (v.startsWith('low')) labels.push('priority:low');
+            }
+
+            // 発生環境
+            const envMatch = body.match(/###\s*発生環境\s*\n+\s*([^\n]+)/);
+            if (envMatch) {
+              const v = envMatch[1];
+              if (v.includes('本番') || /production/i.test(v)) labels.push('env:production');
+              else if (v.includes('ステージング') || /staging/i.test(v)) labels.push('env:staging');
+              else if (v.includes('ローカル') || /local/i.test(v)) labels.push('env:local');
+            }
+
+            // Claude 自動着手OK（checkboxes)
+            if (/- \[x\]\s*Claude Code に自動着手/i.test(body)) {
+              labels.push('claude:auto-ok');
+            }
+
+            if (labels.length === 0) {
+              core.info('No labels to add');
+              return;
+            }
+
+            core.info(`Adding labels: ${labels.join(', ')}`);
+
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              labels: labels,
+            });
