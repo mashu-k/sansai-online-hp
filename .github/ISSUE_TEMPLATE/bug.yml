@@ -1,0 +1,107 @@
+name: 🐛 Bug Report
+description: 不具合の報告
+title: "[Bug] "
+labels: ["type:bug", "status:triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        不具合の修正依頼です。**再現手順** を必ず記入してください。
+        Claude Code 側で機械的に拾うので、項目はできるだけ埋めてください。
+
+  - type: dropdown
+    id: environment
+    attributes:
+      label: 発生環境
+      options:
+        - 本番 (production)
+        - ステージング (staging)
+        - ローカル (local)
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: 対象URL / 画面
+      placeholder: "/admin/posts または https://..."
+    validations:
+      required: true
+
+  - type: dropdown
+    id: browser
+    attributes:
+      label: ブラウザ / デバイス
+      options:
+        - PC Chrome
+        - PC Safari
+        - PC Firefox
+        - PC Edge
+        - スマホ Safari (iOS)
+        - スマホ Chrome (Android)
+        - 不明
+    validations:
+      required: false
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 再現手順
+      placeholder: |
+        1. ログインする
+        2. /admin/posts に移動
+        3. 「投稿」ボタンを押す
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期待する動作
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: 実際の動作
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: スクリーンショット / コンソールログ
+      description: あれば貼り付け（ドラッグ&ドロップ可）
+    validations:
+      required: false
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      options:
+        - critical (本番停止・データ破損レベル)
+        - high (主要機能に影響)
+        - medium (回避策あり)
+        - low (軽微・体験低下のみ)
+      default: 2
+    validations:
+      required: true
+
+  - type: input
+    id: target_files
+    attributes:
+      label: 対象ファイル / 範囲（分かれば）
+      placeholder: "src/app/admin/posts/page.tsx, src/lib/firebase.ts"
+
+  - type: checkboxes
+    id: claude_auto
+    attributes:
+      label: Claude Code 自動着手
+      options:
+        - label: Claude Code に自動着手させてOK（小さな修正で、影響範囲が限定的）

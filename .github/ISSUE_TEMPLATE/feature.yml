@@ -1,0 +1,70 @@
+name: ✨ Feature Request
+description: 新機能・既存機能の改善
+title: "[Feature] "
+labels: ["type:feature", "status:triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        新機能・改善の提案です。**背景・要件・受け入れ基準** を明確にしてください。
+
+  - type: textarea
+    id: background
+    attributes:
+      label: 背景・目的
+      description: なぜこの機能が必要か（解決したい課題、ユーザー価値）
+    validations:
+      required: true
+
+  - type: textarea
+    id: requirements
+    attributes:
+      label: 要件
+      placeholder: |
+        - ○○ができる
+        - ○○の場合は××する
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 受け入れ基準（チェックリスト）
+      description: 完了判定に使う条件。PR完了時にチェックを入れる。
+      value: |
+        - [ ]
+        - [ ]
+        - [ ]
+    validations:
+      required: true
+
+  - type: input
+    id: scope
+    attributes:
+      label: 対象範囲（ファイル / 画面 / API）
+      placeholder: "src/app/posts/, /api/posts"
+
+  - type: textarea
+    id: refs
+    attributes:
+      label: デザイン / 参考資料リンク
+      placeholder: "Figma URL, Notion URL, 参考サイト等"
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: 優先度
+      options:
+        - high
+        - medium
+        - low
+      default: 1
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: claude_auto
+    attributes:
+      label: Claude Code 自動着手
+      options:
+        - label: Claude Code に自動着手させてOK
