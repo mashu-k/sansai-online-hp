@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 💬 質問・相談
+    url: https://github.com/mashu-k/sansai-online-hp/discussions
+    about: バグ報告・機能要望ではない質問は Discussions へ（要Discussions有効化）
