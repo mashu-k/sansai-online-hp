@@ -24,6 +24,9 @@ const Navigation = () => {
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
 
+  // LP（離脱を避けたいページ）ではロゴのみ表示し、メニュー類を出さない
+  const isLandingPage = pathname?.startsWith("/shop/print-harvest");
+
   // ハイドレーション問題を防ぐ
   useEffect(() => {
     setMounted(true);
@@ -65,7 +68,8 @@ const Navigation = () => {
             />
           </Link>
 
-          {/* デスクトップメニュー */}
+          {/* デスクトップメニュー（LPでは非表示） */}
+          {!isLandingPage && (
           <div className="hidden md:flex items-center space-x-8">
             {navItems.map((item) => (
               <Link
@@ -83,8 +87,10 @@ const Navigation = () => {
             <ThemeToggle />
             <UserMenu />
           </div>
+          )}
 
-          {/* モバイルメニューボタン */}
+          {/* モバイルメニューボタン（LPでは非表示） */}
+          {!isLandingPage && (
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(prev => !prev)}
@@ -98,10 +104,11 @@ const Navigation = () => {
               )}
             </button>
           </div>
+          )}
         </div>
 
         {/* モバイルメニュー */}
-        {isOpen && (
+        {!isLandingPage && isOpen && (
           <div className="md:hidden">
             <div className="px-2 pt-2 pb-3 space-y-1 bg-background/95 backdrop-blur-md border-t border-border/50">
               {navItems.map((item) => (

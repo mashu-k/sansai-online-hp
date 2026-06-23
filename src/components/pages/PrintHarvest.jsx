@@ -1,0 +1,448 @@
+"use client";
+import React, { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import Script from "next/script";
+import { LOGO_IMAGES } from "@/data/images.js";
+import "@/app/(site)/shop/print-harvest/print-harvest.css";
+
+/* ============================================================
+   プロジェクト設定（名前は「仮」。ここを差し替えれば全体に反映）
+   シリーズ第2弾以降は edition / expedition / 画像 / Stripe を変えて複製。
+   ============================================================ */
+const PROJECT = {
+  series: "PRINT HARVEST",
+  edition: "Vol.01",
+  expedition: "NEPAL HIMALAYA",
+  year: "2026",
+  price: "12,500",
+  deadline: "2026年8月下旬",
+  delivery: "2026年冬ごろ予定",
+};
+
+/* Stripe（購入ボタン）。publishable-key は公開値なので記載可。
+   ※ いただいたキーが途中で切れている可能性があるため、Stripeダッシュボードの
+     完全な値であることを必ず確認してください。 */
+const STRIPE_BUY_BUTTON_ID = "buy_btn_1TfKMIAbxIPTFUEEagQgxtE2";
+const STRIPE_PUBLISHABLE_KEY =
+  "pk_live_51TfJGcAbxIPTFUEEn7gedMMTOZQiPJ19PCYJNACrWpgKW9vpaAg7dVdeHm6yfyxU3WCZMZiL9ZPddOK6yVQxCo0y00cTUmdY6D";
+
+const IMG = {
+  hero: "/img/shop-lp/2026/IMG_6911.JPG",
+  boulder: "/img/shop-lp/2026/IMG_6912.JPG",
+  worn: "/img/shop-lp/2026/IMG_6913.JPG",
+  tee: "/img/shop-lp/2026/IMG_6914.jpg",
+  tetsu: "/img/member/tetsu.jpg",
+};
+
+const FAQ = [
+  {
+    q: "いつ届きますか？",
+    a: "遠征から帰国後の制作・発送となり、2026年冬ごろのお届けを予定しています。遠征の状況により前後する場合があります。",
+  },
+  {
+    q: "デザインはどんなものになりますか？",
+    a: "Tシャツのデザインは、テツが遠征から持ち帰った現地写真をもとに帰国後に制作します。ネイビーボディの背面グラフィックを予定していますが、デザイン・カラー等の内容は変更になる場合があります。",
+  },
+  {
+    q: "支払いのタイミングは？",
+    a: "ご注文時に即時決済されます。商品のお届けは後日（2026年冬ごろ予定）となります。",
+  },
+  {
+    q: "サイズ展開は？",
+    a: "S / M / L / XL の4サイズ。綿100%・6.1ozのヘビーウェイトボディで、着るごとに風合いが増していきます。",
+  },
+  {
+    q: "キャンセル・返品はできますか？",
+    a: "受注生産のため、受付後のキャンセル・変更・返品はお受けできません。サイズ等をご確認のうえご注文ください。",
+  },
+  {
+    q: "送料はかかりますか？",
+    a: "価格 ¥12,500 に送料を含みます（全国一律・送料込み）。",
+  },
+];
+
+const NOTES = [
+  "本商品は遠征帰国後のお届けとなります（2026年冬ごろ予定）。",
+  "ご注文時に即時決済されます。",
+  "Tシャツのデザイン・内容は帰国後に現地写真をもとに制作します。",
+  "Tシャツの内容（デザイン・カラー等）は変更になる場合があります。",
+  "受注生産のため、受付後のキャンセル・変更はお受けできません。",
+  "発送時期は遠征の状況により前後する場合があります。",
+];
+
+const PrintHarvest = () => {
+  const progressRef = useRef(null);
+  const heroRef = useRef(null);
+  const [stickyShown, setStickyShown] = useState(false);
+
+  // スクロール進捗（標高レール）＋ 追従購入バーの表示制御
+  useEffect(() => {
+    const doc = document.documentElement;
+    const onScroll = () => {
+      const max = doc.scrollHeight - doc.clientHeight;
+      const p = max > 0 ? doc.scrollTop / max : 0;
+      if (progressRef.current) progressRef.current.style.height = `${p * 100}%`;
+      if (heroRef.current) {
+        const heroBottom = heroRef.current.getBoundingClientRect().bottom;
+        setStickyShown(heroBottom <= 0);
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const scrollToOrder = () => {
+    document.getElementById("ph-order")?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  return (
+    <div className="ph-root">
+      <Script src="https://js.stripe.com/v3/buy-button.js" strategy="afterInteractive" />
+
+      {/* edition rail */}
+      <aside className="ph-rail" aria-hidden="true">
+        <div className="ph-progress-wrap">
+          <div className="ph-progress" ref={progressRef}></div>
+        </div>
+        <span className="ph-tick">{PROJECT.series} ↑</span>
+        <span className="ph-tick">{PROJECT.edition}</span>
+        <span className="ph-tick">{PROJECT.expedition}</span>
+        <span className="ph-tick">{PROJECT.year}</span>
+      </aside>
+
+      <div className="ph-shell">
+        {/* ============ HERO ============ */}
+        <section className="ph-hero" ref={heroRef}>
+          <div className="ph-hero-img">
+            <img src={IMG.hero} alt="垂壁を登るクライマー" />
+          </div>
+          <div className="ph-hero-content">
+            <div className="ph-hero-inner">
+              <div className="ph-kicker">
+                <span className="ph-eyebrow">
+                  {PROJECT.series} — {PROJECT.edition}
+                </span>
+                <span className="ph-mono" style={{ fontSize: "0.7rem", color: "var(--mist)" }}>
+                  完全限定 / {PROJECT.expedition}
+                </span>
+              </div>
+              <h1 className="ph-display">
+                PRINT<br />
+                <span className="ph-l2">HARVEST</span>
+              </h1>
+              <p className="ph-jp-lead">山から、持ち帰る。</p>
+              <p className="ph-lede">
+                この秋、テツはネパール・ヒマラヤへ。遠征から持ち帰る一枚の写真が、そのまま一枚のTシャツになる。
+              </p>
+              <div className="ph-meta-row">
+                <button className="ph-cta" onClick={scrollToOrder}>
+                  予約する <span className="ph-arr">→</span>
+                </button>
+                <span className="ph-mono" style={{ fontSize: "0.78rem", color: "var(--mist)" }}>
+                  ¥{PROJECT.price} / 送料込 · 受注締切 {PROJECT.deadline}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="ph-scrollcue" aria-hidden="true">SCROLL ↓</div>
+        </section>
+
+        {/* ============ CONCEPT / STORY ============ */}
+        <section className="ph-story">
+          <div className="ph-wrap ph-block">
+            <span className="ph-eyebrow">新プロジェクト始動 — {PROJECT.series} / {PROJECT.edition}</span>
+            <div className="ph-sec-head" style={{ marginTop: "14px", marginBottom: "36px" }}>
+              <h2>山から、デザインを持ち帰る。</h2>
+            </div>
+
+            {/* プロジェクトの定義（目立たせる） */}
+            <div className="ph-concept-callout">
+              <p>
+                <span className="ph-pj-name">PRINT HARVEST</span>
+                <span className="ph-pj-read">プリント・ハーベスト</span>
+                は、アルパインクライミングチーム「山菜採りオンライン」が遠征へ出るたび、
+                現地で<em>“収穫”した一枚の写真</em>をそのままTシャツに刷り込み、
+                完全限定で届ける——登攀ごとに続いていくプロジェクトです。
+                その記念すべき第一弾（{PROJECT.edition}）が、
+                <strong>テツのネパール・ヒマラヤ遠征</strong>。
+              </p>
+            </div>
+
+            <div className="ph-story-inner ph-grid">
+              <div className="ph-body">
+                <p>
+                  こんにちは、テツです。いつも応援していただき、ありがとうございます。この秋、僕はネパール・ヒマラヤへ向かいます。
+                  <strong>標高7,000mを超える、これまでで最も困難な挑戦</strong>です。
+                </p>
+                <p>
+                  帰国後、現地で撮影した写真を素材に、Tシャツとポストカードを制作・販売します。
+                  <strong>売上は、この遠征の撮影費等に充てさせていただきます。</strong>
+                  あなたの予約が、そのまま壁を登る力になります。
+                </p>
+              </div>
+              <figure className="ph-figure">
+                <img src={IMG.boulder} alt="クライミングするテツ（イメージ）" />
+                <figcaption className="ph-fcap">FIG.01 — テツ / クライミング（イメージ）</figcaption>
+              </figure>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ PUNCH LINES ============ */}
+        <section className="ph-lines">
+          <div className="ph-wrap ph-block">
+            <div className="ph-lines-grid">
+              <p className="ph-line">登って、撮って、刷る。<span>一枚の写真が、一枚の服になる。</span></p>
+              <p className="ph-line">このデザインは、<span>テツもまだ見ていない。</span></p>
+              <p className="ph-line">次に何を持ち帰れるかは、<span>登ってみないと分からない。</span></p>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ TETSU INTRO ============ */}
+        <section className="ph-intro">
+          <div className="ph-wrap ph-block">
+            <span className="ph-eyebrow">The Climber</span>
+            <div className="ph-sec-head" style={{ marginTop: "14px", marginBottom: "44px" }}>
+              <h2>挑むのは、どんな人間か。</h2>
+            </div>
+            <div className="ph-grid">
+              <div className="ph-portrait">
+                <img src={IMG.tetsu} alt="橋本 哲（テツ）" />
+                <span className="ph-frame-tag">TETSU HASHIMOTO</span>
+              </div>
+              <div className="ph-bio">
+                <div className="ph-name">
+                  <h3>橋本 哲</h3>
+                  <span className="ph-en">Tetsu Hashimoto</span>
+                </div>
+                <div className="ph-creds">
+                  <span>El Capitan "The Nose"</span>
+                  <span>Rahman Zom 西壁 6,350m 初登攀</span>
+                  <span>Shiyko Zom 北壁 初登頂</span>
+                </div>
+                <p>
+                  アルパインクライミングチーム「山菜採りオンライン」のクライマー。ヨセミテ El Capitan の登攀、
+                  パキスタンでの未踏壁の初登攀・初登頂を重ねてきた。
+                  <strong style={{ color: "var(--snow)", fontWeight: 500 }}>
+                    6,350mの未踏壁を登りきった彼が、次に挑むのは7,000m級。
+                  </strong>
+                  その記録の一枚を、あなたの手元へ。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ PROCESS ============ */}
+        <section className="ph-process">
+          <div className="ph-wrap ph-block">
+            <div className="ph-sec-head">
+              <span className="ph-eyebrow">How it's made</span>
+              <h2>登って、撮って、一枚にする。</h2>
+              <p>このTシャツのデザインは、まだ世界のどこにもありません。遠征から帰ってはじめて生まれます。</p>
+            </div>
+            <div className="ph-steps">
+              <div className="ph-step">
+                <div className="ph-n">01</div>
+                <h3>登る</h3>
+                <p>2026年秋、ネパール・ヒマラヤへ。最も困難な壁に挑む。</p>
+              </div>
+              <div className="ph-step">
+                <div className="ph-n">02</div>
+                <h3>撮る</h3>
+                <p>その標高でしか見られない稜線、氷壁、光の瞬間を写真に収める。</p>
+              </div>
+              <div className="ph-step">
+                <div className="ph-n">03</div>
+                <h3>刷る</h3>
+                <p>持ち帰った一枚を背面グラフィックに。ネイビーのボディへ。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ SIGNATURE ============ */}
+        <section className="ph-slot">
+          <div className="ph-wrap ph-block">
+            <div className="ph-frame">
+              <span className="ph-corner ph-c1"></span>
+              <span className="ph-corner ph-c2"></span>
+              <span className="ph-corner ph-c3"></span>
+              <span className="ph-corner ph-c4"></span>
+              <div className="ph-inner">
+                <span className="ph-badge">未撮影 / NOT YET PHOTOGRAPHED</span>
+                <h2 className="ph-display">デザインは<br />山の上で決まる</h2>
+                <p>
+                  背面グラフィックは、遠征から持ち帰る現地写真をもとに制作します。あなたが予約するのは、
+                  まだ誰も見たことのない景色そのもの。お届けは{PROJECT.delivery}です。
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ SET CONTENTS ============ */}
+        <section className="ph-set">
+          <div className="ph-wrap ph-block">
+            <div className="ph-sec-head">
+              <span className="ph-eyebrow">Set contents</span>
+              <h2>セット内容</h2>
+              <p>Tシャツ 1枚 ＋ 現地撮影のポストカード 1枚。</p>
+            </div>
+            <div className="ph-grid">
+              <div className="ph-card">
+                <div className="ph-ph">
+                  <img src={IMG.tee} alt="背面グラフィックTシャツ（前作イメージ）" />
+                  <span className="ph-tag">ITEM 01 / T-SHIRT</span>
+                  <span className="ph-note">※前作イメージ</span>
+                </div>
+                <div className="ph-cbody">
+                  <div className="ph-k">COTTON 100% · 6.1 oz · NAVY</div>
+                  <h3>背面グラフィック Tシャツ</h3>
+                  <p>
+                    テツがクライミングで愛用するブランドを採用。綿100%・6.1ozの厚手ボディは、着るごとに風合いを増します。
+                    カラーはネイビー（予定）、背面に現地写真のグラフィック。
+                  </p>
+                </div>
+              </div>
+              <div className="ph-card">
+                <div className="ph-ph">
+                  <img src={IMG.worn} alt="着用イメージ（前作）" />
+                  <span className="ph-tag">ITEM 02 / POSTCARD</span>
+                  <span className="ph-note">※イメージ</span>
+                </div>
+                <div className="ph-cbody">
+                  <div className="ph-k">FIELD PHOTO · 1 PC</div>
+                  <h3>現地撮影ポストカード</h3>
+                  <p>
+                    遠征の現場で切り取った一枚を、手元に残るポストカードに。Tシャツとあわせて、この挑戦の記録を持ち帰ってください。
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ SPEC + ORDER ============ */}
+        <section className="ph-spec" id="ph-order">
+          <div className="ph-wrap ph-block">
+            <div className="ph-sec-head">
+              <span className="ph-eyebrow">Specifications</span>
+              <h2>商品仕様と予約</h2>
+            </div>
+            <div className="ph-grid">
+              <dl>
+                <div className="ph-row"><dt>セット</dt><dd>Tシャツ ×1 ／ ポストカード ×1</dd></div>
+                <div className="ph-row"><dt>素材</dt><dd>綿100% ／ 6.1 oz</dd></div>
+                <div className="ph-row"><dt>カラー</dt><dd>ネイビー（背面グラフィック・予定）</dd></div>
+                <div className="ph-row">
+                  <dt>サイズ</dt>
+                  <dd><div className="ph-sizes"><span>S</span><span>M</span><span>L</span><span>XL</span></div></dd>
+                </div>
+                <div className="ph-row"><dt>受注締切</dt><dd>{PROJECT.deadline}</dd></div>
+                <div className="ph-row"><dt>お届け</dt><dd>遠征帰国後 ／ {PROJECT.delivery}</dd></div>
+              </dl>
+              <div className="ph-priceblock">
+                <div className="ph-pl">PRICE / 送料込み</div>
+                <div className="ph-pv"><span className="ph-yen">¥</span>{PROJECT.price}</div>
+                <div className="ph-ship">送料込み · 全国一律</div>
+                <div className="ph-buy-mount">
+                  <stripe-buy-button
+                    buy-button-id={STRIPE_BUY_BUTTON_ID}
+                    publishable-key={STRIPE_PUBLISHABLE_KEY}
+                  ></stripe-buy-button>
+                </div>
+                <div className="ph-deadline">受注締切 <b>{PROJECT.deadline}</b> · 即時決済</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ FAQ ============ */}
+        <section className="ph-faq">
+          <div className="ph-wrap ph-block">
+            <div className="ph-sec-head">
+              <span className="ph-eyebrow">FAQ</span>
+              <h2>よくある質問</h2>
+            </div>
+            <div className="ph-list">
+              {FAQ.map((item) => (
+                <details key={item.q}>
+                  <summary>
+                    <span>{item.q}</span>
+                    <span className="ph-plus" aria-hidden="true">+</span>
+                  </summary>
+                  <div className="ph-ans">{item.a}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ============ NOTES ============ */}
+        <section className="ph-notes">
+          <div className="ph-wrap ph-block" style={{ paddingTop: 0 }}>
+            <div className="ph-box">
+              <h3>⚠ ご注文前に必ずお読みください</h3>
+              <ul>
+                {NOTES.map((n) => (
+                  <li key={n}>{n}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* ============ FINAL CTA ============ */}
+        <section className="ph-final">
+          <div className="ph-wrap ph-block">
+            <span className="ph-eyebrow">{PROJECT.series} — {PROJECT.edition}</span>
+            <h2>この一枚で、次の一歩を。</h2>
+            <p>あなたの予約が、テツの遠征を支えます。まだ存在しない景色を、一緒に持ち帰りましょう。</p>
+            <button className="ph-cta" onClick={scrollToOrder}>
+              予約して遠征を応援する <span className="ph-arr">→</span>
+            </button>
+          </div>
+        </section>
+
+        {/* ============ LP FOOTER（最小・離脱防止） ============ */}
+        <footer className="ph-footer">
+          <div className="ph-wrap">
+            <div className="ph-frow">
+              <div className="ph-flogo">
+                <Link href="/">
+                  <img src={LOGO_IMAGES.longWhite} alt="SANSAI ONLINE" />
+                </Link>
+              </div>
+              <nav className="ph-flinks">
+                <Link href="/contact">お問い合わせ</Link>
+                <Link href="/tokushoho">特定商取引法に基づく表記</Link>
+                <Link href="/privacy">プライバシーポリシー</Link>
+                <Link href="/terms">利用規約</Link>
+              </nav>
+            </div>
+            <div className="ph-copy">
+              © {PROJECT.year} SANSAI ONLINE · ALPINE CLIMBING TEAM · {PROJECT.series}
+            </div>
+          </div>
+        </footer>
+      </div>
+
+      {/* ============ STICKY BUY BAR ============ */}
+      <div className={`ph-sticky${stickyShown ? " ph-show" : ""}`}>
+        <div className="ph-srow">
+          <div className="ph-sinfo">
+            <span className="ph-st">{PROJECT.series} {PROJECT.edition} 限定セット</span>
+            <span className="ph-sp"><span className="ph-yen">¥</span>{PROJECT.price}</span>
+            <span className="ph-sddl">受注締切 {PROJECT.deadline} · 送料込</span>
+          </div>
+          <button className="ph-cta" onClick={scrollToOrder}>予約する</button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default PrintHarvest;

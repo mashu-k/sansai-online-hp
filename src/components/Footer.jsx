@@ -1,6 +1,8 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { LOGO_IMAGES } from "../data/images.js";
 import {
   Mail,
@@ -10,7 +12,14 @@ import {
 
 const currentYear = new Date().getFullYear();
 
+// 共通フッターを出さず、LP専用フッターに差し替えるルート（離脱防止のため）
+const HIDE_FOOTER_PREFIXES = ["/shop/print-harvest"];
+
 const Footer = () => {
+  const pathname = usePathname();
+  if (pathname && HIDE_FOOTER_PREFIXES.some((p) => pathname.startsWith(p))) {
+    return null;
+  }
   return (
     <footer className="bg-gray-900/95 backdrop-blur-sm border-t border-border/50 text-white">
       <div className="max-w-6xl mx-auto px-4 py-12">
