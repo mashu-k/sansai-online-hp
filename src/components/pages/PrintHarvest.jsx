@@ -209,7 +209,7 @@ const PrintHarvest = () => {
           <div className="ph-wrap ph-block">
             <span className="ph-eyebrow">The Climber</span>
             <div className="ph-sec-head" style={{ marginTop: "14px", marginBottom: "44px" }}>
-              <h2>挑むのは、どんな人間か。</h2>
+              <h2>誰が挑むのか？</h2>
             </div>
             <div className="ph-grid">
               <div className="ph-portrait">
