@@ -5,7 +5,7 @@ import { ThemeProvider as NextThemesProvider } from "next-themes";
 
 // ダーク基調のLPでは共通ヘッダーを白ロゴ＋ダーク帯で表示させたいので、
 // 該当ルートだけテーマをダーク固定にする（離脱すると元のテーマに戻る）。
-const FORCE_DARK_PREFIXES = ["/shop/print-harvest"];
+const FORCE_DARK_PREFIXES = ["/sansai-delivery-01"];
 
 export default function ThemeProvider({ children }) {
   const pathname = usePathname();

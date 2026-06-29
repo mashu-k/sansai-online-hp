@@ -25,7 +25,7 @@ const Navigation = () => {
   const pathname = usePathname();
 
   // LP（離脱を避けたいページ）ではロゴのみ表示し、メニュー類を出さない
-  const isLandingPage = pathname?.startsWith("/shop/print-harvest");
+  const isLandingPage = pathname?.startsWith("/sansai-delivery-01");
 
   // ハイドレーション問題を防ぐ
   useEffect(() => {

@@ -40,7 +40,7 @@ const ShopShiyko = () => {
     "/img/shop-lp/shiyko/CD9DDC62-2F4E-4872-8969-F9833278F046.png",
   ];
 
-  const sizes = ["S", "M", "L", "XL"];
+  const sizes = ["S", "M", "L", "XL", "XXL"];
   const features = [
     {
       title: "プレミアムクオリティ",
@@ -241,7 +241,7 @@ const ShopShiyko = () => {
                     <span className="w-24 font-medium text-foreground">
                       サイズ:
                     </span>
-                    <span>S / M / L / XL</span>
+                    <span>S / M / L / XL / XXL</span>
                   </li>
                   <li className="flex items-center">
                     <span className="w-24 font-medium text-foreground">

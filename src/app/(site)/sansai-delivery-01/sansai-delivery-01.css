@@ -1,5 +1,5 @@
 /* ============================================================
-   PRINT HARVEST — Vol.01 ランディングページ専用スタイル
+   SANSAI Delivery — Vol.01 ランディングページ専用スタイル
    すべて .ph-root 配下にスコープし、サイト本体へ影響しないようにする。
    フォント変数 --font-anton / --font-space-mono は page.jsx の next/font が供給。
    Noto Sans/Serif JP はルートレイアウトが供給する変数を利用。
@@ -115,7 +115,7 @@
 .ph-intro { border-top: 1px solid var(--line); }
 .ph-intro .ph-grid { display: grid; grid-template-columns: 240px 1fr; gap: 48px; align-items: center; }
 .ph-intro .ph-portrait { position: relative; }
-.ph-intro .ph-portrait img { width: 100%; aspect-ratio: 1 / 1; object-fit: cover; border-radius: 4px; filter: grayscale(0.1); }
+.ph-intro .ph-portrait img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: 4px; }
 .ph-intro .ph-portrait .ph-frame-tag { position: absolute; left: 0; bottom: -22px; font-family: var(--ph-mono); font-size: 0.6rem; letter-spacing: 0.12em; color: var(--mist); }
 .ph-intro .ph-bio .ph-name { display: flex; align-items: baseline; gap: 14px; margin-bottom: 8px; }
 .ph-intro .ph-bio .ph-name h3 { font-family: var(--ph-serif); font-weight: 600; font-size: 1.7rem; }

@@ -3,14 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import { LOGO_IMAGES } from "@/data/images.js";
-import "@/app/(site)/shop/print-harvest/print-harvest.css";
+import "@/app/(site)/sansai-delivery-01/sansai-delivery-01.css";
 
 /* ============================================================
    プロジェクト設定（名前は「仮」。ここを差し替えれば全体に反映）
    シリーズ第2弾以降は edition / expedition / 画像 / Stripe を変えて複製。
    ============================================================ */
 const PROJECT = {
-  series: "PRINT HARVEST",
+  series: "SANSAI Delivery",
   edition: "Vol.01",
   expedition: "NEPAL HIMALAYA",
   year: "2026",
@@ -28,10 +28,10 @@ const STRIPE_PUBLISHABLE_KEY =
 
 const IMG = {
   hero: "/img/shop-lp/2026/IMG_6911.JPG",
-  boulder: "/img/shop-lp/2026/IMG_6912.JPG",
-  worn: "/img/shop-lp/2026/IMG_6913.JPG",
+  earth: "/img/shop-lp/2026/IMG_6938.JPG",
+  postcard: "/img/shop-lp/2026/IMG_6932.JPG",
   tee: "/img/shop-lp/2026/IMG_6914.jpg",
-  tetsu: "/img/member/tetsu.jpg",
+  tetsu: "/img/shop-lp/2026/IMG_5384.JPG",
 };
 
 const FAQ = [
@@ -49,7 +49,7 @@ const FAQ = [
   },
   {
     q: "サイズ展開は？",
-    a: "S / M / L / XL の4サイズ。綿100%・6.1ozのヘビーウェイトボディで、着るごとに風合いが増していきます。",
+    a: "S / M / L / XL / XXL の5サイズ。綿100%・6.1ozのヘビーウェイトボディで、着るごとに風合いが増していきます。",
   },
   {
     q: "キャンセル・返品はできますか？",
@@ -128,10 +128,10 @@ const PrintHarvest = () => {
                 </span>
               </div>
               <h1 className="ph-display">
-                PRINT<br />
-                <span className="ph-l2">HARVEST</span>
+                SANSAI<br />
+                <span className="ph-l2">DELIVERY</span>
               </h1>
-              <p className="ph-jp-lead">山から、持ち帰る。</p>
+              <p className="ph-jp-lead">限界のその先で、見えた景色を。あなたにも。</p>
               <p className="ph-lede">
                 この秋、テツはネパール・ヒマラヤへ。遠征から持ち帰る一枚の写真が、そのまま一枚のTシャツになる。
               </p>
@@ -159,9 +159,9 @@ const PrintHarvest = () => {
             {/* プロジェクトの定義（目立たせる） */}
             <div className="ph-concept-callout">
               <p>
-                <span className="ph-pj-name">PRINT HARVEST</span>
-                <span className="ph-pj-read">プリント・ハーベスト</span>
-                は、アルパインクライミングチーム「山菜採りオンライン」が遠征へ出るたび、
+                <span className="ph-pj-name">SANSAI Delivery</span>
+                <span className="ph-pj-read">山菜デリバリー</span>
+                は、「山菜採りオンライン」が遠征へ出るたび、
                 現地で<em>“収穫”した一枚の写真</em>をそのままTシャツに刷り込み、
                 完全限定で届ける——登攀ごとに続いていくプロジェクトです。
                 その記念すべき第一弾（{PROJECT.edition}）が、
@@ -172,25 +172,29 @@ const PrintHarvest = () => {
             <div className="ph-story-inner ph-grid">
               <div className="ph-body">
                 <p>
-                  こんにちは、テツです。いつも応援していただき、ありがとうございます。この秋、僕はネパール・ヒマラヤへ向かいます。
-                  <strong>標高7,000mを超える、これまでで最も困難な挑戦</strong>です。
+                  こんにちは、テツです。いつも応援していただき、ありがとうございます。この秋、僕はパートナーと2人でネパール・ヒマラヤへ向かいます。
+                  <strong>標高7,000mを超え、標高差は1,700mにも及ぶ、これまでで最も困難な挑戦</strong>です。
+                </p>
+                <p>
+                  壁の大きさ以外にも、コンディションに恵まれなければ登頂が難しく、過去数パーティにトライされていますが、
+                  どのパーティも敗退を余儀なくされています。今回はその壁の山頂へ抜けるダイレクトラインを登攀する予定です。
                 </p>
                 <p>
                   帰国後、現地で撮影した写真を素材に、Tシャツとポストカードを制作・販売します。
                   <strong>売上は、この遠征の撮影費等に充てさせていただきます。</strong>
-                  あなたの予約が、そのまま壁を登る力になります。
+                  そして皆様の支えが、壁を登る力になります。
                 </p>
               </div>
               <figure className="ph-figure">
-                <img src={IMG.boulder} alt="クライミングするテツ（イメージ）" />
-                <figcaption className="ph-fcap">FIG.01 — テツ / クライミング（イメージ）</figcaption>
+                <img src={IMG.earth} alt="挑むルート — ネパール・ヒマラヤ（Google Earth）" />
+                <figcaption className="ph-fcap">FIG.01 — 挑むルート / ネパール・ヒマラヤ（Google Earth）</figcaption>
               </figure>
             </div>
           </div>
         </section>
 
         {/* ============ PUNCH LINES ============ */}
-        <section className="ph-lines">
+        {/* <section className="ph-lines">
           <div className="ph-wrap ph-block">
             <div className="ph-lines-grid">
               <p className="ph-line">登って、撮って、刷る。<span>一枚の写真が、一枚の服になる。</span></p>
@@ -198,7 +202,7 @@ const PrintHarvest = () => {
               <p className="ph-line">次に何を持ち帰れるかは、<span>登ってみないと分からない。</span></p>
             </div>
           </div>
-        </section>
+        </section> */}
 
         {/* ============ TETSU INTRO ============ */}
         <section className="ph-intro">
@@ -210,7 +214,6 @@ const PrintHarvest = () => {
             <div className="ph-grid">
               <div className="ph-portrait">
                 <img src={IMG.tetsu} alt="橋本 哲（テツ）" />
-                <span className="ph-frame-tag">TETSU HASHIMOTO</span>
               </div>
               <div className="ph-bio">
                 <div className="ph-name">
@@ -247,17 +250,17 @@ const PrintHarvest = () => {
               <div className="ph-step">
                 <div className="ph-n">01</div>
                 <h3>登る</h3>
-                <p>2026年秋、ネパール・ヒマラヤへ。最も困難な壁に挑む。</p>
+                <p>2026年秋、ヒマラヤへ。7000m級の最も困難な壁へ。必ず登頂できる保証はありません。だから冒険と思っています。<br />その土地、その壁でしか味わえない挑戦をしてきます。</p>
               </div>
               <div className="ph-step">
                 <div className="ph-n">02</div>
                 <h3>撮る</h3>
-                <p>その標高でしか見られない稜線、氷壁、光の瞬間を写真に収める。</p>
+                <p>ほとんど人が踏み入れたことがないその場所へ。<br />そこでしか見られない稜線、氷壁、光の瞬間を写真に収めます。</p>
               </div>
               <div className="ph-step">
                 <div className="ph-n">03</div>
                 <h3>刷る</h3>
-                <p>持ち帰った一枚を背面グラフィックに。ネイビーのボディへ。</p>
+                <p>持ち帰った景色をTシャツとポストカードにしてお届けします。</p>
               </div>
             </div>
           </div>
@@ -309,7 +312,7 @@ const PrintHarvest = () => {
               </div>
               <div className="ph-card">
                 <div className="ph-ph">
-                  <img src={IMG.worn} alt="着用イメージ（前作）" />
+                  <img src={IMG.postcard} alt="現地撮影ポストカード（イメージ）" />
                   <span className="ph-tag">ITEM 02 / POSTCARD</span>
                   <span className="ph-note">※イメージ</span>
                 </div>
@@ -339,7 +342,7 @@ const PrintHarvest = () => {
                 <div className="ph-row"><dt>カラー</dt><dd>ネイビー（背面グラフィック・予定）</dd></div>
                 <div className="ph-row">
                   <dt>サイズ</dt>
-                  <dd><div className="ph-sizes"><span>S</span><span>M</span><span>L</span><span>XL</span></div></dd>
+                  <dd><div className="ph-sizes"><span>S</span><span>M</span><span>L</span><span>XL</span><span>XXL</span></div></dd>
                 </div>
                 <div className="ph-row"><dt>受注締切</dt><dd>{PROJECT.deadline}</dd></div>
                 <div className="ph-row"><dt>お届け</dt><dd>遠征帰国後 ／ {PROJECT.delivery}</dd></div>

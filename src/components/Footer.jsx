@@ -13,7 +13,7 @@ import {
 const currentYear = new Date().getFullYear();
 
 // 共通フッターを出さず、LP専用フッターに差し替えるルート（離脱防止のため）
-const HIDE_FOOTER_PREFIXES = ["/shop/print-harvest"];
+const HIDE_FOOTER_PREFIXES = ["/sansai-delivery-01"];
 
 const Footer = () => {
   const pathname = usePathname();
