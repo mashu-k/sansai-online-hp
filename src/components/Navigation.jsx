@@ -34,6 +34,9 @@ const Navigation = () => {
 
   // テーマに応じてロゴを選択
   const getLogoSource = () => {
+    // LPはテーマをダーク固定にしている（next-themes の forcedTheme は
+    // useTheme().theme に反映されないため）ので、ここで白ロゴに固定する。
+    if (isLandingPage) return LOGO_IMAGES.primaryWhite;
     if (!mounted) return LOGO_IMAGES.primary; // 初期表示時はデフォルト
     return theme === "dark" ? LOGO_IMAGES.primaryWhite : LOGO_IMAGES.primary;
   };
