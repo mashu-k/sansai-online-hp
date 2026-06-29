@@ -386,7 +386,7 @@ const PrintHarvest = () => {
 
         {/* ============ NOTES ============ */}
         <section className="ph-notes">
-          <div className="ph-wrap ph-block" style={{ paddingTop: 0 }}>
+          <div className="ph-wrap ph-block">
             <div className="ph-box">
               <h3>⚠ ご注文前に必ずお読みください</h3>
               <ul>
