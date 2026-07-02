@@ -3,6 +3,8 @@ import React, { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import Script from "next/script";
 import { LOGO_IMAGES } from "@/data/images.js";
+import { getLp } from "@/lib/lp-config";
+import { lpEvent } from "@/lib/lp-tracking";
 import "@/app/(site)/sansai-delivery-01/sansai-delivery-01.css";
 
 /* ============================================================
@@ -70,10 +72,45 @@ const NOTES = [
   "発送時期は遠征の状況により前後する場合があります。",
 ];
 
+// GA4イベントの接頭辞（lp-config.js と対で管理）
+const EV = getLp("sansai-delivery-01").eventPrefix;
+
 const PrintHarvest = () => {
   const progressRef = useRef(null);
   const heroRef = useRef(null);
   const [stickyShown, setStickyShown] = useState(false);
+
+  // セクション到達計測：data-lp-section を持つ各セクションが
+  // 画面下部20%より上に入った時点で1回だけイベント送信
+  useEffect(() => {
+    const targets = document.querySelectorAll("[data-lp-section]");
+    if (targets.length === 0 || typeof IntersectionObserver === "undefined") return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          lpEvent(`${EV}_section_${entry.target.dataset.lpSection}`);
+          observer.unobserve(entry.target);
+        });
+      },
+      { rootMargin: "0px 0px -20% 0px", threshold: 0 }
+    );
+    targets.forEach((el) => observer.observe(el));
+    return () => observer.disconnect();
+  }, []);
+
+  // Stripe購入ボタン操作計測：ボタンはiframe内のためクリックを直接拾えない。
+  // フォーカスがiframeへ移った際の window blur で操作開始を検知する
+  useEffect(() => {
+    const onBlur = () => {
+      const ae = document.activeElement;
+      if (ae && ae.closest && ae.closest(".ph-buy-mount")) {
+        lpEvent(`${EV}_checkout_focus`);
+      }
+    };
+    window.addEventListener("blur", onBlur);
+    return () => window.removeEventListener("blur", onBlur);
+  }, []);
 
   // スクロール進捗（標高レール）＋ 追従購入バーの表示制御
   useEffect(() => {
@@ -92,7 +129,8 @@ const PrintHarvest = () => {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const scrollToOrder = () => {
+  const scrollToOrder = (ctaId) => {
+    if (ctaId) lpEvent(`${EV}_cta_${ctaId}`, { once: false });
     document.getElementById("ph-order")?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -113,7 +151,7 @@ const PrintHarvest = () => {
 
       <div className="ph-shell">
         {/* ============ HERO ============ */}
-        <section className="ph-hero" ref={heroRef}>
+        <section className="ph-hero" ref={heroRef} data-lp-section="hero">
           <div className="ph-hero-img">
             <img src={IMG.hero} alt="垂壁を登るクライマー" />
           </div>
@@ -136,7 +174,7 @@ const PrintHarvest = () => {
                 この秋、テツはネパール・ヒマラヤへ。遠征から持ち帰る一枚の写真が、そのまま一枚のTシャツになる。
               </p>
               <div className="ph-meta-row">
-                <button className="ph-cta" onClick={scrollToOrder}>
+                <button className="ph-cta" onClick={() => scrollToOrder("hero")}>
                   予約する <span className="ph-arr">→</span>
                 </button>
                 <span className="ph-mono" style={{ fontSize: "0.78rem", color: "var(--mist)" }}>
@@ -149,7 +187,7 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ CONCEPT / STORY ============ */}
-        <section className="ph-story">
+        <section className="ph-story" data-lp-section="story">
           <div className="ph-wrap ph-block">
             <span className="ph-eyebrow">新プロジェクト始動 — {PROJECT.series} / {PROJECT.edition}</span>
             <div className="ph-sec-head" style={{ marginTop: "14px", marginBottom: "36px" }}>
@@ -205,7 +243,7 @@ const PrintHarvest = () => {
         </section> */}
 
         {/* ============ TETSU INTRO ============ */}
-        <section className="ph-intro">
+        <section className="ph-intro" data-lp-section="climber">
           <div className="ph-wrap ph-block">
             <span className="ph-eyebrow">The Climber</span>
             <div className="ph-sec-head" style={{ marginTop: "14px", marginBottom: "44px" }}>
@@ -239,7 +277,7 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ PROCESS ============ */}
-        <section className="ph-process">
+        <section className="ph-process" data-lp-section="process">
           <div className="ph-wrap ph-block">
             <div className="ph-sec-head">
               <span className="ph-eyebrow">How it's made</span>
@@ -255,7 +293,7 @@ const PrintHarvest = () => {
               <div className="ph-step">
                 <div className="ph-n">02</div>
                 <h3>撮る</h3>
-                <p>ほとんど人が踏み入れたことがないその場所へ。<br />そこでしか見られない稜線、氷壁、光の瞬間を写真に収めます。</p>
+                <p>ほとんど人が踏み入れたことがないその場所へ。<br />そこでしか見られない稜線、氷壁、光の瞬間を"収穫"してきます。</p>
               </div>
               <div className="ph-step">
                 <div className="ph-n">03</div>
@@ -267,7 +305,7 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ SIGNATURE ============ */}
-        <section className="ph-slot">
+        <section className="ph-slot" data-lp-section="signature">
           <div className="ph-wrap ph-block">
             <div className="ph-frame">
               <span className="ph-corner ph-c1"></span>
@@ -278,7 +316,7 @@ const PrintHarvest = () => {
                 <span className="ph-badge">未撮影 / NOT YET PHOTOGRAPHED</span>
                 <h2 className="ph-display">デザインは<br />山の上で決まる</h2>
                 <p>
-                  背面グラフィックは、遠征から持ち帰る現地写真をもとに制作します。あなたが予約するのは、
+                  背面グラフィックは、遠征で"収穫"した現地写真をもとに制作します。あなたが予約するのは、
                   まだ誰も見たことのない景色そのもの。お届けは{PROJECT.delivery}です。
                 </p>
               </div>
@@ -287,7 +325,7 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ SET CONTENTS ============ */}
-        <section className="ph-set">
+        <section className="ph-set" data-lp-section="set">
           <div className="ph-wrap ph-block">
             <div className="ph-sec-head">
               <span className="ph-eyebrow">Set contents</span>
@@ -329,7 +367,7 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ SPEC + ORDER ============ */}
-        <section className="ph-spec" id="ph-order">
+        <section className="ph-spec" id="ph-order" data-lp-section="order">
           <div className="ph-wrap ph-block">
             <div className="ph-sec-head">
               <span className="ph-eyebrow">Specifications</span>
@@ -364,7 +402,7 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ FAQ ============ */}
-        <section className="ph-faq">
+        <section className="ph-faq" data-lp-section="faq">
           <div className="ph-wrap ph-block">
             <div className="ph-sec-head">
               <span className="ph-eyebrow">FAQ</span>
@@ -399,12 +437,12 @@ const PrintHarvest = () => {
         </section>
 
         {/* ============ FINAL CTA ============ */}
-        <section className="ph-final">
+        <section className="ph-final" data-lp-section="final">
           <div className="ph-wrap ph-block">
             <span className="ph-eyebrow">{PROJECT.series} — {PROJECT.edition}</span>
             <h2>この一枚で、次の一歩を。</h2>
             <p>あなたの予約が、テツの遠征を支えます。まだ存在しない景色を、一緒に持ち帰りましょう。</p>
-            <button className="ph-cta" onClick={scrollToOrder}>
+            <button className="ph-cta" onClick={() => scrollToOrder("final")}>
               予約して遠征を応援する <span className="ph-arr">→</span>
             </button>
           </div>
@@ -441,7 +479,7 @@ const PrintHarvest = () => {
             <span className="ph-sp"><span className="ph-yen">¥</span>{PROJECT.price}</span>
             <span className="ph-sddl">受注締切 {PROJECT.deadline} · 送料込</span>
           </div>
-          <button className="ph-cta" onClick={scrollToOrder}>予約する</button>
+          <button className="ph-cta" onClick={() => scrollToOrder("sticky")}>予約する</button>
         </div>
       </div>
     </div>

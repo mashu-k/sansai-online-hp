@@ -19,3 +19,6 @@ pnpm-debug.log*
 # 作業ゴミ（MCP・一時生成物）
 .playwright-mcp/
 final-portrait.png
+
+# Vercel CLI
+.vercel/

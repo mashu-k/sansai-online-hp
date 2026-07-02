@@ -13,6 +13,7 @@ import {
   Users,
   MessageCircle,
   ChevronRight,
+  ShoppingBag,
 } from "lucide-react";
 
 const sidebarItems = [
@@ -20,6 +21,7 @@ const sidebarItems = [
   { name: "ブログ管理", path: "/admin/posts", icon: FileText },
   { name: "コメント", path: "/admin/comments", icon: MessageCircle },
   { name: "アクセス解析", path: "/admin/analytics", icon: BarChart3 },
+  { name: "LP解析", path: "/admin/lp", icon: ShoppingBag },
   { name: "ユーザー管理", path: "/admin/users", icon: Users },
 ];
 
