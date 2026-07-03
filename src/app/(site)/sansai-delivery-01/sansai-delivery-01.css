@@ -58,9 +58,9 @@
 
 /* ---------- hero ---------- */
 .ph-hero { position: relative; min-height: 100vh; display: flex; align-items: flex-end; overflow: hidden; }
-.ph-hero .ph-hero-img { position: absolute; inset: 0; z-index: 0; }
+.ph-hero .ph-hero-img { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 0; }
 .ph-hero .ph-hero-img img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 38%; filter: saturate(0.85) contrast(1.05); }
-.ph-hero .ph-hero-img::after { content: ""; position: absolute; inset: 0; background:
+.ph-hero .ph-hero-img::after { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; background:
   linear-gradient(180deg, rgba(10,12,16,0.55) 0%, rgba(10,12,16,0.12) 34%, rgba(10,12,16,0.62) 72%, var(--ink) 100%),
   linear-gradient(90deg, rgba(10,12,16,0.72), rgba(10,12,16,0) 55%); }
 .ph-hero .ph-hero-content { position: relative; z-index: 2; width: 100%; padding: 0 28px 9vh; }
@@ -84,8 +84,12 @@
 .ph-ghost:hover { color: var(--snow); border-color: var(--teal); }
 
 /* ---------- section base ---------- */
-/* 縦方向のみ指定（padding ショートハンドだと .ph-wrap の左右28pxを打ち消してしまう） */
-.ph-block { padding-block: clamp(72px, 11vh, 138px); }
+/* 縦方向のみ個別指定（padding ショートハンドだと .ph-wrap の左右28pxを打ち消す。
+   padding-block は旧iOS Safariが未対応のため top/bottom を明示） */
+.ph-block {
+  padding-top: clamp(72px, 11vh, 138px);
+  padding-bottom: clamp(72px, 11vh, 138px);
+}
 .ph-sec-head { display: flex; flex-direction: column; gap: 14px; margin-bottom: 50px; max-width: 760px; }
 .ph-sec-head h2 { font-family: var(--ph-serif); font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.7rem); line-height: 1.35; letter-spacing: 0.01em; }
 .ph-sec-head p { color: var(--mist); font-weight: 300; }
@@ -234,8 +238,8 @@
   .ph-intro .ph-portrait { max-width: 220px; }
 }
 @media (max-width: 600px) {
-  /* 余白をスマホ向けに最適化 */
-  .ph-wrap { padding: 0 20px; }
+  /* 余白をスマホ向けに最適化（左右のみ。shorthand禁止 — .ph-block の上下余白を潰すため） */
+  .ph-wrap { padding-left: 20px; padding-right: 20px; }
   .ph-hero .ph-hero-content { padding: 0 20px 10vh; }
   .ph-story .ph-concept-callout { padding-left: 18px; margin-bottom: 44px; }
   .ph-slot .ph-frame .ph-inner { padding-left: 20px; padding-right: 20px; }
