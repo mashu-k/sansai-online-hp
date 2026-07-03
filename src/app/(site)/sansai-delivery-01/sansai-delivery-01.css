@@ -84,7 +84,8 @@
 .ph-ghost:hover { color: var(--snow); border-color: var(--teal); }
 
 /* ---------- section base ---------- */
-.ph-block { padding: clamp(72px, 11vh, 138px) 0; }
+/* 縦方向のみ指定（padding ショートハンドだと .ph-wrap の左右28pxを打ち消してしまう） */
+.ph-block { padding-block: clamp(72px, 11vh, 138px); }
 .ph-sec-head { display: flex; flex-direction: column; gap: 14px; margin-bottom: 50px; max-width: 760px; }
 .ph-sec-head h2 { font-family: var(--ph-serif); font-weight: 500; font-size: clamp(1.7rem, 3.4vw, 2.7rem); line-height: 1.35; letter-spacing: 0.01em; }
 .ph-sec-head p { color: var(--mist); font-weight: 300; }
@@ -233,7 +234,24 @@
   .ph-intro .ph-portrait { max-width: 220px; }
 }
 @media (max-width: 600px) {
+  /* 余白をスマホ向けに最適化 */
+  .ph-wrap { padding: 0 20px; }
+  .ph-hero .ph-hero-content { padding: 0 20px 10vh; }
+  .ph-story .ph-concept-callout { padding-left: 18px; margin-bottom: 44px; }
+  .ph-slot .ph-frame .ph-inner { padding-left: 20px; padding-right: 20px; }
+  .ph-spec .ph-row { grid-template-columns: 92px 1fr; gap: 14px; }
+  .ph-priceblock { padding: 24px 18px; }
+  .ph-notes .ph-box { padding: 22px 18px; }
+  /* 追従バーに隠れないようフッター下部に余白を確保 */
+  .ph-footer { padding-bottom: 130px; }
+
+  /* 追従購入バー：左に商品名＋価格を縦積み、右にボタン（重なり防止） */
+  .ph-sticky .ph-srow { padding: 10px 16px; gap: 12px; }
+  .ph-sticky .ph-sinfo { flex-direction: column; align-items: flex-start; gap: 0; }
+  .ph-sticky .ph-sinfo .ph-st { font-size: 0.76rem; white-space: normal; line-height: 1.35; }
+  .ph-sticky .ph-sinfo .ph-sp { font-size: 1.35rem; line-height: 1.2; }
   .ph-sticky .ph-sinfo .ph-sddl { display: none; }
+  .ph-sticky .ph-cta { flex-shrink: 0; padding: 12px 20px; font-size: 0.95rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .ph-root *, .ph-root *::after, .ph-root *::before { animation: none !important; transition: none !important; }
