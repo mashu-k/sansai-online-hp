@@ -17,8 +17,14 @@ const PROJECT = {
   expedition: "NEPAL HIMALAYA",
   year: "2026",
   price: "12,500",
-  deadline: "2026年8月下旬",
+  deadline: "2026年8月31日（月）",
   delivery: "2026年冬ごろ予定",
+};
+
+/* 特別特典：オンライン報告会（購入者限定） */
+const REPORT_EVENT = {
+  date: "2026年11月8日（日）",
+  time: "18:00〜19:30",
 };
 
 /* Stripe（購入ボタン）。publishable-key は公開値なので記載可。
@@ -51,7 +57,11 @@ const FAQ = [
   },
   {
     q: "サイズ展開は？",
-    a: "S / M / L / XL / XXL の5サイズ。綿100%・6.1ozのヘビーウェイトボディで、着るごとに風合いが増していきます。",
+    a: "S / M / L / XL / XXL の5サイズ。各サイズの寸法は「商品仕様と予約」のサイズ表をご確認ください。綿100%・6.1ozのヘビーウェイトボディで、着るごとに風合いが増していきます。なお、染め加工時の縮みのため商品サイズには個体差がございます。",
+  },
+  {
+    q: "オンライン報告会には誰でも参加できますか？",
+    a: `ご購入者限定の特典です。${REPORT_EVENT.date}${REPORT_EVENT.time}に開催し、ご購入後に参加リンクをお送りします。報告会実施後には、アーカイブ動画をメールでお送りしますので、当日参加できない方もお楽しみいただけます。`,
   },
   {
     q: "キャンセル・返品はできますか？",
@@ -69,7 +79,9 @@ const NOTES = [
   "Tシャツのデザイン・内容は帰国後に現地写真をもとに制作します。",
   "Tシャツの内容（デザイン・カラー等）は変更になる場合があります。",
   "受注生産のため、受付後のキャンセル・変更はお受けできません。",
+  "染め加工時の縮みのため、商品サイズに個体差がございます。",
   "発送時期は遠征の状況により前後する場合があります。",
+  "オンライン報告会の参加リンクは、ご購入後にお送りします（実施後にアーカイブ動画も配信します）。",
 ];
 
 // GA4イベントの接頭辞（lp-config.js と対で管理）
@@ -330,7 +342,7 @@ const PrintHarvest = () => {
             <div className="ph-sec-head">
               <span className="ph-eyebrow">Set contents</span>
               <h2>セット内容</h2>
-              <p>Tシャツ 1枚 ＋ 現地撮影のポストカード 1枚。</p>
+              <p>Tシャツ 1枚 ＋ 現地撮影のポストカード 1枚 ＋ オンライン報告会。</p>
             </div>
             <div className="ph-grid">
               <div className="ph-card">
@@ -362,6 +374,24 @@ const PrintHarvest = () => {
                   </p>
                 </div>
               </div>
+              <div className="ph-card">
+                <div className="ph-ph ph-ph--event">
+                  <span className="ph-tag">ITEM 03 / SPECIAL</span>
+                  <div className="ph-event-visual" aria-hidden="true">
+                    <span className="ph-event-badge">購入者限定 特典</span>
+                    <span className="ph-event-date">11.8 <small>SUN</small></span>
+                    <span className="ph-event-time">18:00 — 19:30</span>
+                  </div>
+                </div>
+                <div className="ph-cbody">
+                  <div className="ph-k">LIVE REPORT · ONLINE</div>
+                  <h3>オンライン報告会</h3>
+                  <p>
+                    ご購入者限定で、遠征の報告会をオンラインで実施します。日程は{REPORT_EVENT.date}{REPORT_EVENT.time}。
+                    ご購入後に参加リンクをお送りし、実施後にはアーカイブ動画もメールでお届けします。
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </section>
@@ -375,15 +405,36 @@ const PrintHarvest = () => {
             </div>
             <div className="ph-grid">
               <dl>
-                <div className="ph-row"><dt>セット</dt><dd>Tシャツ ×1 ／ ポストカード ×1</dd></div>
+                <div className="ph-row"><dt>セット</dt><dd>Tシャツ ×1 ／ ポストカード ×1 ／ オンライン報告会ご招待</dd></div>
                 <div className="ph-row"><dt>素材</dt><dd>綿100% ／ 6.1 oz</dd></div>
                 <div className="ph-row"><dt>カラー</dt><dd>ネイビー（背面グラフィック・予定）</dd></div>
-                <div className="ph-row">
+                <div className="ph-row ph-row--stack">
                   <dt>サイズ</dt>
-                  <dd><div className="ph-sizes"><span>S</span><span>M</span><span>L</span><span>XL</span><span>XXL</span></div></dd>
+                  <dd>
+                    <table className="ph-sizechart">
+                      <thead>
+                        <tr><th>サイズ</th><th>着丈</th><th>身幅</th><th>袖丈</th><th>肩幅</th></tr>
+                      </thead>
+                      <tbody>
+                        <tr><th>S</th><td>66</td><td>47</td><td>18</td><td>46</td></tr>
+                        <tr><th>M</th><td>71</td><td>52</td><td>21</td><td>50</td></tr>
+                        <tr><th>L</th><td>73</td><td>54</td><td>22</td><td>52</td></tr>
+                        <tr><th>XL</th><td>77</td><td>59</td><td>23</td><td>57</td></tr>
+                        <tr><th>XXL</th><td>80</td><td>65</td><td>24</td><td>60</td></tr>
+                      </tbody>
+                    </table>
+                    <span className="ph-sizechart-unit">単位：cm ／ S〜XXL の5サイズ展開</span>
+                    <span className="ph-sizechart-unit">※染め加工時の縮みのため、商品サイズに個体差がございます。</span>
+                  </dd>
                 </div>
                 <div className="ph-row"><dt>受注締切</dt><dd>{PROJECT.deadline}</dd></div>
                 <div className="ph-row"><dt>お届け</dt><dd>遠征帰国後 ／ {PROJECT.delivery}</dd></div>
+                <div className="ph-row">
+                  <dt>備考</dt>
+                  <dd>
+                    ご購入者限定のオンライン報告会にご招待します（{REPORT_EVENT.date}{REPORT_EVENT.time}）。参加リンクはご購入後にお送りし、実施後にはアーカイブ動画をメールでお届けします。
+                  </dd>
+                </div>
               </dl>
               <div className="ph-priceblock">
                 <div className="ph-pl">PRICE / 送料込み</div>
