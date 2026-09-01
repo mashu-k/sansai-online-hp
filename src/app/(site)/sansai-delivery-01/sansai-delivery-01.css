@@ -283,3 +283,18 @@
   .ph-root *, .ph-root *::after, .ph-root *::before { animation: none !important; transition: none !important; }
 }
 .ph-root :focus-visible { outline: 2px solid var(--teal); outline-offset: 3px; }
+
+/* ============ 受付終了（CLOSED）表示 ============ */
+.ph-closed-strip { position: relative; z-index: 30; background: rgba(52, 183, 199, 0.08); border-bottom: 1px solid var(--teal); padding: 14px 28px; text-align: center; font-family: var(--ph-sans); font-size: 0.88rem; line-height: 1.7; color: var(--snow); }
+.ph-closed-strip b { font-family: var(--ph-mono); font-weight: 700; letter-spacing: 0.24em; color: var(--teal); margin-right: 12px; }
+.ph-cta:disabled { background: #232b36; color: var(--mist); cursor: not-allowed; }
+.ph-cta:disabled:hover { transform: none; box-shadow: none; }
+.ph-closed-pill { display: inline-block; font-family: var(--ph-mono); font-size: 0.66rem; letter-spacing: 0.24em; color: var(--mist); border: 1px solid var(--mist); padding: 7px 14px; border-radius: 999px; }
+.ph-closed-box { margin-top: 20px; border: 1px dashed rgba(159, 176, 190, 0.4); border-radius: 3px; padding: 26px 22px; text-align: center; }
+.ph-closed-box .ph-closed-pill { margin-bottom: 16px; }
+.ph-closed-box p { font-family: var(--ph-sans); font-size: 0.92rem; line-height: 1.9; color: var(--snow); }
+.ph-closed-box .ph-closed-sub { margin-top: 10px; font-family: var(--ph-mono); font-size: 0.74rem; color: var(--mist); }
+.ph-final .ph-closed-pill { margin-top: 8px; }
+@media (max-width: 720px) {
+  .ph-closed-strip { padding: 12px 16px; font-size: 0.8rem; }
+}

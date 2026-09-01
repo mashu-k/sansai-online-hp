@@ -11,6 +11,10 @@ import "@/app/(site)/sansai-delivery-01/sansai-delivery-01.css";
    プロジェクト設定（名前は「仮」。ここを差し替えれば全体に反映）
    シリーズ第2弾以降は edition / expedition / 画像 / Stripe を変えて複製。
    ============================================================ */
+/* 受注受付の終了フラグ。true にすると購入ボタン・追従バーを止め、
+   ページ全体を「受付終了・お礼」表示に切り替える。再販時は false に戻す。 */
+const CAMPAIGN_CLOSED = true;
+
 const PROJECT = {
   series: "SANSAI Delivery",
   edition: "Vol.01",
@@ -148,7 +152,9 @@ const PrintHarvest = () => {
 
   return (
     <div className="ph-root">
-      <Script src="https://js.stripe.com/v3/buy-button.js" strategy="afterInteractive" />
+      {!CAMPAIGN_CLOSED && (
+        <Script src="https://js.stripe.com/v3/buy-button.js" strategy="afterInteractive" />
+      )}
 
       {/* edition rail */}
       <aside className="ph-rail" aria-hidden="true">
@@ -162,6 +168,14 @@ const PrintHarvest = () => {
       </aside>
 
       <div className="ph-shell">
+        {/* ============ 受付終了バナー ============ */}
+        {CAMPAIGN_CLOSED && (
+          <div className="ph-closed-strip" role="status">
+            <b>CLOSED</b>
+            {PROJECT.series} {PROJECT.edition} の受注受付は終了しました。たくさんのご予約、誠にありがとうございました。
+          </div>
+        )}
+
         {/* ============ HERO ============ */}
         <section className="ph-hero" ref={heroRef} data-lp-section="hero">
           <div className="ph-hero-img">
@@ -186,12 +200,25 @@ const PrintHarvest = () => {
                 この秋、テツはネパール・ヒマラヤへ。遠征から持ち帰る一枚の写真が、そのまま一枚のTシャツになる。
               </p>
               <div className="ph-meta-row">
-                <button className="ph-cta" onClick={() => scrollToOrder("hero")}>
-                  予約する <span className="ph-arr">→</span>
-                </button>
-                <span className="ph-mono" style={{ fontSize: "0.78rem", color: "var(--mist)" }}>
-                  ¥{PROJECT.price} / 送料込 · 受注締切 {PROJECT.deadline}
-                </span>
+                {CAMPAIGN_CLOSED ? (
+                  <>
+                    <button className="ph-cta" disabled>
+                      受付は終了しました
+                    </button>
+                    <span className="ph-mono" style={{ fontSize: "0.78rem", color: "var(--mist)" }}>
+                      受注受付は {PROJECT.deadline} をもって終了しました
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <button className="ph-cta" onClick={() => scrollToOrder("hero")}>
+                      予約する <span className="ph-arr">→</span>
+                    </button>
+                    <span className="ph-mono" style={{ fontSize: "0.78rem", color: "var(--mist)" }}>
+                      ¥{PROJECT.price} / 送料込 · 受注締切 {PROJECT.deadline}
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -440,13 +467,27 @@ const PrintHarvest = () => {
                 <div className="ph-pl">PRICE / 送料込み</div>
                 <div className="ph-pv"><span className="ph-yen">¥</span>{PROJECT.price}</div>
                 <div className="ph-ship">送料込み · 全国一律</div>
-                <div className="ph-buy-mount">
-                  <stripe-buy-button
-                    buy-button-id={STRIPE_BUY_BUTTON_ID}
-                    publishable-key={STRIPE_PUBLISHABLE_KEY}
-                  ></stripe-buy-button>
-                </div>
-                <div className="ph-deadline">受注締切 <b>{PROJECT.deadline}</b> · 即時決済</div>
+                {CAMPAIGN_CLOSED ? (
+                  <div className="ph-closed-box">
+                    <span className="ph-closed-pill">受付終了 / CLOSED</span>
+                    <p>
+                      本商品の受注受付は {PROJECT.deadline} をもって終了しました。
+                      <br />
+                      たくさんのご予約、誠にありがとうございました。
+                    </p>
+                    <p className="ph-closed-sub">ご予約分のお届けは {PROJECT.delivery} です。</p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="ph-buy-mount">
+                      <stripe-buy-button
+                        buy-button-id={STRIPE_BUY_BUTTON_ID}
+                        publishable-key={STRIPE_PUBLISHABLE_KEY}
+                      ></stripe-buy-button>
+                    </div>
+                    <div className="ph-deadline">受注締切 <b>{PROJECT.deadline}</b> · 即時決済</div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -491,11 +532,25 @@ const PrintHarvest = () => {
         <section className="ph-final" data-lp-section="final">
           <div className="ph-wrap ph-block">
             <span className="ph-eyebrow">{PROJECT.series} — {PROJECT.edition}</span>
-            <h2>この一枚で、次の一歩を。</h2>
-            <p>あなたの予約が、テツの遠征を支えます。まだ存在しない景色を、一緒に持ち帰りましょう。</p>
-            <button className="ph-cta" onClick={() => scrollToOrder("final")}>
-              予約して遠征を応援する <span className="ph-arr">→</span>
-            </button>
+            {CAMPAIGN_CLOSED ? (
+              <>
+                <h2>ありがとうございました。</h2>
+                <p>
+                  {PROJECT.edition} の受注受付は {PROJECT.deadline} をもって終了しました。
+                  ご予約いただいた皆さまの応援が、テツの遠征を支えます。
+                  持ち帰った景色は、{PROJECT.delivery}にお手元へお届けします。
+                </p>
+                <span className="ph-closed-pill">受付終了 / CLOSED</span>
+              </>
+            ) : (
+              <>
+                <h2>この一枚で、次の一歩を。</h2>
+                <p>あなたの予約が、テツの遠征を支えます。まだ存在しない景色を、一緒に持ち帰りましょう。</p>
+                <button className="ph-cta" onClick={() => scrollToOrder("final")}>
+                  予約して遠征を応援する <span className="ph-arr">→</span>
+                </button>
+              </>
+            )}
           </div>
         </section>
 
@@ -522,17 +577,19 @@ const PrintHarvest = () => {
         </footer>
       </div>
 
-      {/* ============ STICKY BUY BAR ============ */}
-      <div className={`ph-sticky${stickyShown ? " ph-show" : ""}`}>
-        <div className="ph-srow">
-          <div className="ph-sinfo">
-            <span className="ph-st">{PROJECT.series} {PROJECT.edition} 限定セット</span>
-            <span className="ph-sp"><span className="ph-yen">¥</span>{PROJECT.price}</span>
-            <span className="ph-sddl">受注締切 {PROJECT.deadline} · 送料込</span>
+      {/* ============ STICKY BUY BAR（受付終了後は表示しない） ============ */}
+      {!CAMPAIGN_CLOSED && (
+        <div className={`ph-sticky${stickyShown ? " ph-show" : ""}`}>
+          <div className="ph-srow">
+            <div className="ph-sinfo">
+              <span className="ph-st">{PROJECT.series} {PROJECT.edition} 限定セット</span>
+              <span className="ph-sp"><span className="ph-yen">¥</span>{PROJECT.price}</span>
+              <span className="ph-sddl">受注締切 {PROJECT.deadline} · 送料込</span>
+            </div>
+            <button className="ph-cta" onClick={() => scrollToOrder("sticky")}>予約する</button>
           </div>
-          <button className="ph-cta" onClick={() => scrollToOrder("sticky")}>予約する</button>
         </div>
-      </div>
+      )}
     </div>
   );
 };
