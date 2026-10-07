@@ -1,2 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /login
+Disallow: /api/
+
+Sitemap: https://www.sansai-online.com/sitemap.xml

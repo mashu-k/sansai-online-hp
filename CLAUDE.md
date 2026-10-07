@@ -101,3 +101,9 @@ App Router の `page.jsx` は薄いラッパーに徹し、実装は `src/compon
 ## GitHub Issue / 自動化
 
 `.github/workflows/issue-auto-label.yml` が Issue 本文をパースして自動ラベル付けする（優先度・発生環境・「Claude 自動着手OK」チェックボックス）。Issue テンプレートは `.github/ISSUE_TEMPLATE/` にある。
+
+## デプロイ監視ルール
+
+`main` に push したら、必ず Vercel のデプロイ結果を確認して報告する（Vercel が GitHub Deployments API に書き戻す状態を `gh api repos/:owner/:repo/deployments` で読む）。
+- ポーリング間隔は **60秒**（リアルタイム性は不要。短い間隔で回さない）。初回チェックは push の1分後。
+- success / failure / error のいずれかに達したら終了し、本番URLと結果を報告する。失敗時は `vercel` CLI でビルドログを取得して原因まで報告する。
