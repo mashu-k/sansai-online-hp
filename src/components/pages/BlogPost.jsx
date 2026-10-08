@@ -12,6 +12,7 @@ import { db } from "@/lib/firebase";
 import BlogSidebar from "../BlogSidebar";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { getAuthor } from "@/lib/authors";
 import LikeButton from "../blog/LikeButton";
 import CommentSection from "../blog/CommentSection";
 import LoginModal from "../auth/LoginModal";
@@ -202,7 +203,8 @@ const BlogPost = () => {
     );
   }
 
-  // 関連記事は state で管理
+  // 著者（authorId 未選択・不明なら null → 表示しない）
+  const author = getAuthor(post.authorId);
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-20">
@@ -239,10 +241,15 @@ const BlogPost = () => {
             </h1>
 
             <div className="flex items-center space-x-6 text-white/80">
-              <div className="flex items-center">
-                <User className="h-4 w-4 mr-2" />
-                {post.author}
-              </div>
+              {author && (
+                <Link
+                  href={author.link}
+                  className="flex items-center hover:text-white transition-colors"
+                >
+                  <User className="h-4 w-4 mr-2" />
+                  {author.name}
+                </Link>
+              )}
               <div className="flex items-center">
                 <Calendar className="h-4 w-4 mr-2" />
                 {post.date}
@@ -394,6 +401,32 @@ const BlogPost = () => {
                     {post.content}
                   </ReactMarkdown>
                 </div>
+
+                {/* 著者（未選択なら非表示） */}
+                {author && (
+                  <Link href={author.link} className="block mt-12">
+                    <Card className="hover:shadow-lg transition-shadow">
+                      <CardContent className="flex items-center gap-4 p-6">
+                        <Image
+                          src={author.image}
+                          alt={author.name}
+                          width={64}
+                          height={64}
+                          className="rounded-full object-cover w-16 h-16"
+                        />
+                        <div>
+                          <div className="text-xs text-muted-foreground mb-1">
+                            この記事を書いた人
+                          </div>
+                          <div className="text-lg font-bold">{author.name}</div>
+                          <div className="text-sm text-accent">
+                            {author.nameEng}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                )}
 
                 {/* いいねボタン */}
                 <div className="mt-12 flex justify-center">

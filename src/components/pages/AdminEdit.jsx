@@ -34,6 +34,7 @@ import {
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import ReactMarkdown from "react-markdown";
+import { AUTHORS } from "@/lib/authors";
 import remarkGfm from "remark-gfm";
 import imageCompression from "browser-image-compression";
 
@@ -50,6 +51,7 @@ const AdminEdit = ({ isNewPost = false }) => {
     category: "",
     location: "",
     author: "SANSAI ONLINE",
+    authorId: "", // 著者（AUTHORS の id）。未選択は ""
     thumbnail: "",
     status: "draft",
     tags: [],
@@ -98,6 +100,7 @@ const AdminEdit = ({ isNewPost = false }) => {
         const data = docSnap.data();
         setPost({
           id: docSnap.id,
+          authorId: "",
           ...data,
           date:
             data.createdAt?.toDate().toLocaleDateString("ja-JP") || data.date,
@@ -737,6 +740,32 @@ const AdminEdit = ({ isNewPost = false }) => {
                         <option value="ギアレビュー">ギアレビュー</option>
                         <option value="その他">その他</option>
                       </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium mb-2">
+                        著者
+                      </label>
+                      <select
+                        value={post.authorId || ""}
+                        onChange={(e) =>
+                          setPost((prev) => ({
+                            ...prev,
+                            authorId: e.target.value,
+                          }))
+                        }
+                        className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50"
+                      >
+                        <option value="">未選択（表示しない）</option>
+                        {AUTHORS.map((a) => (
+                          <option key={a.id} value={a.id}>
+                            {a.name}
+                          </option>
+                        ))}
+                      </select>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        未選択の場合、記事ページに著者は表示されません
+                      </p>
                     </div>
 
                     <div>
