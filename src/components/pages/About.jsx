@@ -8,7 +8,7 @@ import Link from "next/link";
 const About = () => {
   const teamMembers = [
     {
-      name: "川嵜摩周",
+      name: "川崎摩周",
       nameEng: "Mashu Kawasaki",
       description: "明治大学出身",
       image: "/img/member/mashu.jpg",

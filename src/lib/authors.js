@@ -3,7 +3,7 @@
 export const AUTHORS = [
   {
     id: "mashu",
-    name: "川嵜摩周",
+    name: "川崎摩周",
     nameEng: "Mashu Kawasaki",
     image: "/img/member/mashu.jpg",
     link: "/mashu",

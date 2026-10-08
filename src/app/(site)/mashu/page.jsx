@@ -2,14 +2,14 @@ import React from "react";
 import MemberProfile from "@/components/pages/MemberProfile";
 
 export const metadata = {
-  title: "川嵜 摩周 (Mashu Kawasaki) - メンバー紹介",
+  title: "川崎 摩周 (Mashu Kawasaki) - メンバー紹介",
   description:
-    "山菜採りオンライン メンバー 川嵜摩周。明治大学山岳部出身。パキスタン Rahman Zom西壁初登攀、MILLETアンバサダー。",
+    "山菜採りオンライン メンバー 川崎摩周。明治大学山岳部出身。パキスタン Rahman Zom西壁初登攀、MILLETアンバサダー。",
 };
 
 const MashuPage = () => {
   const memberData = {
-    name: "川嵜 摩周",
+    name: "川崎 摩周",
     nameEng: "Mashu Kawasaki",
     image: "https://firebasestorage.googleapis.com/v0/b/sansaionlinehp.firebasestorage.app/o/members%2FIMG_5338.jpg?alt=media&token=e523a852-8e85-4e42-a4d4-a4f84a82ffdf",
     history: `北海道出身
