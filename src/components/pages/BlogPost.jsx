@@ -28,11 +28,13 @@ import {
   limit,
 } from "firebase/firestore";
 
-const BlogPost = () => {
+// initialPost: サーバーコンポーネント（blog/[id]/page.jsx）が取得済みの記事。
+// 渡された場合は初回描画から本文を出し、クライアント側の再取得は行わない。
+const BlogPost = ({ initialPost = null }) => {
   const params = useParams();
-  const id = params?.id;
-  const [post, setPost] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const id = params?.id || initialPost?.id;
+  const [post, setPost] = useState(initialPost);
+  const [loading, setLoading] = useState(!initialPost);
   const [relatedPosts, setRelatedPosts] = useState([]);
   const [loginOpen, setLoginOpen] = useState(false);
   const { user, isProfileComplete } = useAuth();
@@ -42,9 +44,13 @@ const BlogPost = () => {
   };
 
   useEffect(() => {
-    if (id) {
-      fetchPost();
+    if (!id) return;
+    if (initialPost && initialPost.id === id) {
+      // 本文はサーバー描画済み。関連記事だけクライアントで取得する。
+      fetchRelatedPosts(initialPost.category, initialPost.id, initialPost.tags);
+      return;
     }
+    fetchPost();
   }, [id]);
 
   const fetchPost = async () => {
@@ -263,7 +269,7 @@ const BlogPost = () => {
 
             {/* タグ */}
             <div className="flex flex-wrap gap-2 mt-4">
-              {post.tags.map((tag) => (
+              {(post.tags || []).map((tag) => (
                 <Link key={tag} href={`/blog?tag=${encodeURIComponent(tag)}`}>
                   <Badge
                     variant="outline"

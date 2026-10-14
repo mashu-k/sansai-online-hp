@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
@@ -17,20 +17,32 @@ import mountainImage1 from "../../assets/O3BPW6fJZvdO.jpg";
 import mountainImage2 from "../../assets/Gug695rWIM25.jpg";
 import mountainImage3 from "../../assets/5ie679JxHPf1.jpeg";
 
-const Blog = () => {
+// useSearchParams() を静的生成ページで呼ぶと、最寄りの Suspense まで丸ごと
+// クライアント描画になり、記事一覧が HTML に含まれなくなる（SEO上の問題）。
+// そのため URL パラメータの読み取りだけをこの小さなコンポーネントに隔離する。
+const SearchParamsSync = ({ onChange }) => {
   const searchParams = useSearchParams();
+  useEffect(() => {
+    onChange(searchParams);
+  }, [searchParams]);
+  return null;
+};
+
+// initialPosts: サーバーコンポーネント（blog/page.jsx）が取得済みの公開記事一覧。
+// 渡された場合は初回描画から記事リンクを出し、クライアント側の再取得は行わない。
+const Blog = ({ initialPosts = null }) => {
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const [selectedTags, setSelectedTags] = useState([]);
   const [sortMode, setSortMode] = useState("newest");
-  const [blogPosts, setBlogPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [blogPosts, setBlogPosts] = useState(initialPosts || []);
+  const [loading, setLoading] = useState(!initialPosts);
   const [categories, setCategories] = useState([]);
   const [popularTags, setPopularTags] = useState([]);
 
-  // URLパラメータからタグとカテゴリーを読み取る
-  useEffect(() => {
+  // URLパラメータからタグとカテゴリーを読み取る（SearchParamsSync から呼ばれる）
+  const handleSearchParams = (searchParams) => {
     const tagParams = searchParams.getAll("tag");
     if (tagParams.length > 0) {
       setSelectedTags(tagParams);
@@ -40,9 +52,13 @@ const Blog = () => {
       // スラッグを日本語名に変換してstateにセット
       setSelectedCategory(toJaName(categoryParam));
     }
-  }, [searchParams]);
+  };
 
   useEffect(() => {
+    if (initialPosts) {
+      calculateStats(initialPosts);
+      return;
+    }
     fetchPosts();
   }, []);
 
@@ -216,6 +232,9 @@ const Blog = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground pt-20">
+      <Suspense fallback={null}>
+        <SearchParamsSync onChange={handleSearchParams} />
+      </Suspense>
       {/* ヘッダーセクション */}
       <section className="py-20 px-4 bg-gradient-to-b from-card/20 to-transparent">
         <div className="max-w-6xl mx-auto text-center">

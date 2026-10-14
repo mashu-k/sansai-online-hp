@@ -22,6 +22,7 @@ const notoSerifJP = Noto_Serif_JP({
 });
 
 export const metadata = {
+  metadataBase: new URL("https://www.sansai-online.com"),
   title: {
     default: "SANSAI ONLINE | アルパインクライミングチーム 山菜採りオンライン",
     template: "%s | SANSAI ONLINE",
